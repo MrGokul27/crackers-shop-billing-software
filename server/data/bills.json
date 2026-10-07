@@ -1,5 +1,55 @@
 [
   {
+    "id": "bill_1791390447052",
+    "billNo": "CRK-1015",
+    "items": [
+      {
+        "id": "p1",
+        "name": "10cm Electric Sparklers",
+        "price": 45,
+        "qty": 2,
+        "total": 90,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p2",
+        "name": "10cm Color Sparklers",
+        "price": 55,
+        "qty": 1,
+        "total": 55,
+        "emoji": "🎇",
+        "unit": "Box"
+      },
+      {
+        "id": "p3",
+        "name": "15cm Electric Sparklers",
+        "price": 90,
+        "qty": 2,
+        "total": 180,
+        "emoji": "✨",
+        "unit": "Box"
+      }
+    ],
+    "totalItemsCount": 5,
+    "subtotal": 325,
+    "discount": 0,
+    "grandTotal": 325,
+    "paymentMethod": "CASH",
+    "amountReceived": 0,
+    "changeToReturn": 0,
+    "customerPhone": "",
+    "cashier": "Kumar (Cashier 1)",
+    "createdAt": "2026-10-07T16:27:27.052Z",
+    "shopSnapshot": {
+      "shopName": "CRACKERS SHOP",
+      "phone": "+91 93451 81039",
+      "address": "No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai",
+      "footerNote": "✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.",
+      "upiId": "gokulanathjp@okicici"
+    }
+  },
+  {
     "id": "bill_1791368405030",
     "billNo": "CRK-1014",
     "items": [

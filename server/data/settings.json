@@ -1,0 +1,14 @@
+{
+  "shopName": "CRACKERS SHOP",
+  "tagline": "Direct Factory Sivakasi Crackers at Wholesale Price",
+  "address": "No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai",
+  "phone": "+91 93451 81039",
+  "cashierName": "Kumar (Cashier 1)",
+  "cashierPin": "1234",
+  "upiId": "gokulanathjp@okicici",
+  "printerType": "thermal58",
+  "footerNote": "✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.",
+  "discountEnabled": true,
+  "autoPrintReceipt": true,
+  "currencySymbol": "₹"
+}

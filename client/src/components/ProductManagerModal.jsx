@@ -138,6 +138,55 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     }
   };
 
+  const handleExportBackup = () => {
+    if (!products || products.length === 0) {
+      alert('No products to export.');
+      return;
+    }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `cracker-items-backup-${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleImportBackup = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        if (!Array.isArray(imported)) {
+          alert('Invalid file format. Expected a JSON array of cracker items.');
+          return;
+        }
+        if (!window.confirm(`Restore ${imported.length} cracker items from backup file?`)) return;
+
+        const res = await fetch('/api/products/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products: imported })
+        });
+        if (res.ok) {
+          try {
+            localStorage.setItem('CRACKER_PRODUCTS_CACHE_V1', JSON.stringify(imported));
+          } catch (e) {}
+          alert(`Successfully restored ${imported.length} cracker items!`);
+          onRefreshProducts();
+        } else {
+          alert('Failed to sync items to server.');
+        }
+      } catch (err) {
+        alert('Error reading JSON backup file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const filtered = products.filter(p => {
     if (!searchTerm) return true;
     const q = searchTerm.toLowerCase();
@@ -349,29 +398,68 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
             )}
 
             {/* Top Toolbar */}
-            <div className="d-flex justify-content-between align-items-center gap-2 mb-3">
-              <div className="input-group input-group-sm" style={{ maxWidth: '300px' }}>
-                <span className="input-group-text bg-white">
-                  <i className="fa-solid fa-magnifying-glass text-muted"></i>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Filter cracker, brand, barcode..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <div className="input-group input-group-sm" style={{ maxWidth: '240px' }}>
+                  <span className="input-group-text bg-white">
+                    <i className="fa-solid fa-magnifying-glass text-muted"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Filter cracker, brand..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+
+                {/* Backup & Restore Action Buttons */}
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 shadow-sm"
+                  onClick={handleExportBackup}
+                  title="Download a backup file of all cracker items (JSON)"
+                >
+                  <i className="fa-solid fa-download text-primary"></i>
+                  <span>Backup JSON</span>
+                </button>
+
+                <label
+                  className="btn btn-outline-secondary btn-sm mb-0 d-flex align-items-center gap-1 shadow-sm cursor-pointer"
+                  title="Upload & Restore cracker items from a backup JSON file"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <i className="fa-solid fa-upload text-success"></i>
+                  <span>Restore JSON</span>
+                  <input
+                    type="file"
+                    accept=".json"
+                    className="d-none"
+                    onChange={handleImportBackup}
+                  />
+                </label>
               </div>
 
               {!isCreating && !editingProduct && (
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm fw-bold px-3 rounded-pill"
+                  className="btn btn-primary btn-sm fw-bold px-3 rounded-pill shadow-sm"
                   onClick={handleStartCreate}
                 >
                   <i className="fa-solid fa-plus me-1"></i> Add New Cracker
                 </button>
               )}
+            </div>
+
+            {/* Render Sleep Auto-Restore Protection Notice */}
+            <div className="alert alert-success bg-opacity-10 border border-success border-opacity-25 py-1 px-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2 small">
+              <span style={{ fontSize: '0.78rem' }}>
+                <i className="fa-solid fa-shield-halved text-success me-1"></i>
+                <strong>Render Persistence Active:</strong> All items are auto-saved to your browser and will self-restore automatically if Render restarts after inactivity.
+              </span>
+              <span className="badge bg-success bg-opacity-25 text-dark font-monospace" style={{ fontSize: '0.74rem' }}>
+                {products.length} Items Preserved
+              </span>
             </div>
 
             {/* Items Table */}

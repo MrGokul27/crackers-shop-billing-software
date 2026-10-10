@@ -97,16 +97,58 @@ export default function App() {
 
   const searchInputRef = useRef(null);
 
-  // Fetch initial products & settings
+  const STORAGE_KEY_PRODUCTS = 'CRACKER_PRODUCTS_CACHE_V1';
+  const STORAGE_KEY_SETTINGS = 'CRACKER_SETTINGS_CACHE_V1';
+
+  // Fetch initial products & settings with Automatic Render Re-hydration
   const fetchProducts = () => {
     fetch('/api/products')
       .then(res => res.json())
       .then(json => {
-        if (json.success) setProducts(json.data);
+        if (json.success) {
+          if (Array.isArray(json.data) && json.data.length > 0) {
+            setProducts(json.data);
+            try {
+              localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(json.data));
+            } catch (e) {}
+          } else {
+            // Server returned empty list (e.g. Render restarted/slept). Check browser auto-backup!
+            try {
+              const cached = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+              if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  console.log(`⚡ Render cold-restart detected. Auto-restoring ${parsed.length} products to server...`);
+                  setProducts(parsed);
+                  // Self-heal server disk immediately
+                  fetch('/api/products/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ products: parsed })
+                  }).catch(err => console.warn('Auto-rehydration warning:', err));
+                } else {
+                  setProducts([]);
+                }
+              } else {
+                setProducts([]);
+              }
+            } catch (e) {
+              setProducts([]);
+            }
+          }
+        }
         setLoading(false);
       })
       .catch(err => {
         console.error('Error fetching products:', err);
+        // Offline / sleeping instance fallback: load from browser storage
+        try {
+          const cached = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) setProducts(parsed);
+          }
+        } catch (e) {}
         setLoading(false);
       });
   };
@@ -118,10 +160,32 @@ export default function App() {
         if (json.success) {
           setSettings(json.data);
           if (json.data.cashierName) setCashier(json.data.cashierName);
+          try {
+            localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(json.data));
+          } catch (e) {}
         }
       })
-      .catch(err => console.error('Error fetching settings:', err));
+      .catch(err => {
+        console.error('Error fetching settings:', err);
+        try {
+          const cached = localStorage.getItem(STORAGE_KEY_SETTINGS);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            setSettings(parsed);
+            if (parsed.cashierName) setCashier(parsed.cashierName);
+          }
+        } catch (e) {}
+      });
   };
+
+  // Keep browser auto-backup updated whenever products list changes
+  useEffect(() => {
+    if (products && products.length > 0) {
+      try {
+        localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+      } catch (e) {}
+    }
+  }, [products]);
 
   useEffect(() => {
     fetchProducts();

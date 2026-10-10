@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
-import { db } from './db.js';
+import { db, initMongo } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -244,6 +244,26 @@ app.delete('/api/products/:id', (req, res) => {
   }
 });
 
+// POST bulk sync / restore products from client
+app.post('/api/products/sync', (req, res) => {
+  try {
+    const { products } = req.body;
+    if (!Array.isArray(products)) {
+      return res.status(400).json({ success: false, message: 'Products array is required' });
+    }
+
+    db.saveProducts(products);
+    broadcastEvent('products_updated', {
+      action: 'sync',
+      products
+    });
+
+    res.json({ success: true, count: products.length, data: products });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // ---------------- BILLS & CHECKOUT ENDPOINTS ----------------
 // GET all bills with filter
 app.get('/api/bills', (req, res) => {
@@ -357,6 +377,43 @@ app.get('/api/bills/:id', (req, res) => {
   }
 });
 
+// POST bulk sync / restore bills from client
+app.post('/api/bills/sync', (req, res) => {
+  try {
+    const { bills } = req.body;
+    if (!Array.isArray(bills)) {
+      return res.status(400).json({ success: false, message: 'Bills array is required' });
+    }
+
+    const existing = db.getBills();
+    const existingIds = new Set(existing.map(b => b.id || b.billNo));
+    const merged = [...existing];
+    bills.forEach(b => {
+      if (!existingIds.has(b.id || b.billNo)) {
+        merged.push(b);
+      }
+    });
+
+    merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    db.saveBills(merged);
+
+    res.json({ success: true, count: merged.length, data: merged });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET cloud & persistence health status
+app.get('/api/status', (req, res) => {
+  res.json({
+    success: true,
+    cloudConnected: db.isCloudConnected ? db.isCloudConnected() : false,
+    productsCount: db.getProducts().length,
+    billsCount: db.getBills().length,
+    uptime: Math.round(process.uptime())
+  });
+});
+
 // ---------------- STATS & SUMMARY ----------------
 app.get('/api/stats', (req, res) => {
   try {
@@ -437,19 +494,21 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('\n======================================================');
-  console.log(`🎆 Cracker Shop Billing Software Server Running!`);
-  console.log(`💻 Local Machine:    http://localhost:${PORT}`);
+// Start Server with Cloud Persistence Initialization
+initMongo().finally(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log('\n======================================================');
+    console.log(`🎆 Cracker Shop Billing Software Server Running!`);
+    console.log(`💻 Local Machine:    http://localhost:${PORT}`);
 
-  const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        console.log(`📱 Other Devices/Wi-Fi: http://${iface.address}:${PORT}`);
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+      for (const iface of interfaces[name]) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          console.log(`📱 Other Devices/Wi-Fi: http://${iface.address}:${PORT}`);
+        }
       }
     }
-  }
-  console.log('======================================================\n');
+    console.log('======================================================\n');
+  });
 });

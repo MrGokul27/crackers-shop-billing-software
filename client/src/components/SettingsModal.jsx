@@ -117,6 +117,26 @@ export default function SettingsModal({ settings, onSaveSettings, onClose }) {
                     onChange={(e) => setFormData({ ...formData, footerNote: e.target.value })}
                   />
                 </div>
+
+                {/* Cloud & Render Storage Status Section */}
+                <div className="col-12 mt-2">
+                  <div className="card bg-light border p-2">
+                    <div className="d-flex align-items-center justify-content-between mb-1">
+                      <span className="small fw-bold text-dark">
+                        <i className="fa-solid fa-cloud-arrow-up text-primary me-1"></i> Data Storage & Render Persistence
+                      </span>
+                      <span className="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 small">
+                        Browser Auto-Sync Active
+                      </span>
+                    </div>
+                    <p className="small text-muted mb-1" style={{ fontSize: '0.78rem' }}>
+                      Render free tier services spin down after 15 mins of inactivity. The POS now automatically preserves and self-restores your products, settings & inventory in your browser storage.
+                    </p>
+                    <p className="small text-muted mb-0" style={{ fontSize: '0.75rem' }}>
+                      💡 <em>Optional:</em> For permanent cloud storage across all devices, you can add a free <code>MONGODB_URI</code> in your Render Environment Variables.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 

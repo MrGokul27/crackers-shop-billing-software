@@ -291,7 +291,7 @@ app.post('/api/bills', (req, res) => {
       amountReceived: (amountReceived !== undefined && amountReceived !== null && amountReceived !== '' && !isNaN(parseFloat(amountReceived))) ? parseFloat(amountReceived) : 0,
       changeToReturn: parseFloat(changeToReturn) || 0,
       customerPhone: customerPhone || '',
-      cashier: cashier || settings.cashierName || 'Cashier',
+      cashier: cashier || settings.cashierName || 'Owner/Admin',
       createdAt: new Date().toISOString(),
       shopSnapshot: {
         shopName: settings.shopName,

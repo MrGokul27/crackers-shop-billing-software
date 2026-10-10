@@ -49,7 +49,7 @@ export default function ThermalReceipt({ bill, settings }) {
             <span>{formattedDate}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span><strong>Cashier:</strong> {bill.cashier || 'Admin'}</span>
+            <span><strong>Cashier:</strong> {bill.cashier || 'Owner/Admin'}</span>
             <span><strong>Pay:</strong> {bill.paymentMethod}</span>
           </div>
           {bill.customerPhone && (

@@ -9,7 +9,7 @@ export default function SettingsModal({ settings, onSaveSettings, onClose }) {
     upiId: settings?.upiId || 'crackerstore@upi',
     printerType: settings?.printerType || 'thermal80',
     footerNote: settings?.footerNote || '✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.',
-    cashierName: settings?.cashierName || 'Cashier 1'
+    cashierName: settings?.cashierName || 'Owner/Admin'
   });
 
   const handleSubmit = (e) => {

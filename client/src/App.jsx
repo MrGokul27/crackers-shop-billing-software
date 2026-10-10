@@ -40,7 +40,7 @@ export default function App() {
 
   // Settings & Cashier
   const [settings, setSettings] = useState(null);
-  const [cashier, setCashier] = useState('Kumar (Cashier 1)');
+  const [cashier, setCashier] = useState('Owner/Admin');
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Modals & Print State

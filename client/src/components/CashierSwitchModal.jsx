@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const POPULAR_CASHIERS = ['Kumar (Counter 1)', 'Murugan (Counter 2)', 'Gokul (Counter 3)', 'Ramesh (Wholesale)', 'Owner / Admin'];
+const POPULAR_CASHIERS = ['Owner/Admin'];
 
 export default function CashierSwitchModal({ currentCashier, onSelectCashier, onClose }) {
   const [customName, setCustomName] = useState('');

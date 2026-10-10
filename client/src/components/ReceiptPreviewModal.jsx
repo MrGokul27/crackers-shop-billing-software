@@ -41,7 +41,7 @@ export default function ReceiptPreviewModal({ bill, settings, onClose, onPrint }
                 <span>{formattedDate}</span>
               </div>
               <div className="d-flex justify-content-between small">
-                <span><strong>Cashier:</strong> {bill.cashier || 'Admin'}</span>
+                <span><strong>Cashier:</strong> {bill.cashier || 'Owner/Admin'}</span>
                 <span className="badge bg-secondary">{bill.paymentMethod}</span>
               </div>
               {bill.customerPhone && (

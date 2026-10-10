@@ -2,17 +2,22 @@ import React from 'react';
 
 const CATEGORIES = [
   { id: 'All', label: 'All Crackers', emoji: '🌟' },
-  { id: 'Sparklers', label: 'Sparklers (மத்தாப்பு)', emoji: '✨' },
-  { id: 'Flower Pots', label: 'Flower Pots (பூந்தொட்டி)', emoji: '🪴' },
-  { id: 'Chakra', label: 'Ground Chakra (சக்கரம்)', emoji: '🌀' },
-  { id: 'Rockets', label: 'Rockets (ராக்கெட்)', emoji: '🚀' },
-  { id: 'Sound Crackers', label: 'Sound Crackers (வெடி)', emoji: '💥' },
-  { id: 'Garlands', label: 'Garlands (சரவெடி)', emoji: '🧨' },
-  { id: 'Sky Shots', label: 'Sky Shots (வானவெடி)', emoji: '🎆' },
-  { id: 'Kids Special', label: 'Kids Special', emoji: '🍿' },
-  { id: 'Gift Box', label: 'Gift Box', emoji: '🎁' },
-  { id: 'Brand', label: 'Brand (பிராண்ட்)', emoji: '🏷️' },
-  { id: 'Stock', label: 'Stock (ஸ்டாக்)', emoji: '📦' }
+  { id: 'SINGLE SHOT CRACKERS', label: 'Single Shot Crackers', emoji: '💥' },
+  { id: 'SPARKLERS', label: 'Sparklers', emoji: '✨' },
+  { id: 'CHAKKARS', label: 'Chakkars', emoji: '🌀' },
+  { id: 'TWINKLING STARS', label: 'Twinkling Stars', emoji: '⭐' },
+  { id: 'CANDLES & LIGHTS', label: 'Candles & Lights', emoji: '🕯️' },
+  { id: 'FLOWER POTS', label: 'Flower Pots', emoji: '🪴' },
+  { id: 'ATOM BOMBS', label: 'Atom Bombs', emoji: '💣' },
+  { id: 'LOOSE CRACKERS', label: 'Loose Crackers', emoji: '🧨' },
+  { id: 'FANCY VARIETIES', label: 'Fancy Varieties', emoji: '🎇' },
+  { id: 'TIN', label: 'Tin', emoji: '🥫' },
+  { id: 'PEACOCK BIG', label: 'Peacock Big', emoji: '🦚' },
+  { id: 'SHOTS', label: 'Shots', emoji: '🎆' },
+  { id: '3 EFFECT SERIES', label: '3 Effect Series', emoji: '🌠' },
+  { id: 'COLOUR SMOKE', label: 'Colour Smoke', emoji: '💨' },
+  { id: 'GIFT BOXES', label: 'Gift Boxes', emoji: '🎁' },
+  { id: 'OTHERS', label: 'Others', emoji: '🏷️' }
 ];
 
 export default function CategoryFilter({ activeCategory, onSelectCategory, counts }) {

@@ -2,17 +2,22 @@ import React, { useState } from 'react';
 import BarcodeGenerator, { downloadBarcodeImage, downloadProductSticker } from './BarcodeGenerator';
 
 const CATEGORIES = [
-  'Sparklers',
-  'Flower Pots',
-  'Chakra',
-  'Rockets',
-  'Sound Crackers',
-  'Garlands',
-  'Sky Shots',
-  'Kids Special',
-  'Gift Box',
-  'Brand',
-  'Stock'
+  'SINGLE SHOT CRACKERS',
+  'SPARKLERS',
+  'CHAKKARS',
+  'TWINKLING STARS',
+  'CANDLES & LIGHTS',
+  'FLOWER POTS',
+  'ATOM BOMBS',
+  'LOOSE CRACKERS',
+  'FANCY VARIETIES',
+  'TIN',
+  'PEACOCK BIG',
+  'SHOTS',
+  '3 EFFECT SERIES',
+  'COLOUR SMOKE',
+  'GIFT BOXES',
+  'OTHERS'
 ];
 
 const COMMON_BRANDS = [
@@ -34,7 +39,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
 
   const [formData, setFormData] = useState({
     name: '',
-    category: 'Sparklers',
+    category: 'SINGLE SHOT CRACKERS',
     brand: 'Standard Fireworks',
     stock: 50,
     price: '',
@@ -50,7 +55,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     setEditingProduct(null);
     setFormData({
       name: '',
-      category: 'Sparklers',
+      category: 'SINGLE SHOT CRACKERS',
       brand: 'Standard Fireworks',
       stock: 50,
       price: '',

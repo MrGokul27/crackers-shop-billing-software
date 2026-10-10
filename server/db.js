@@ -22,7 +22,7 @@ const DEFAULT_SETTINGS = {
   tagline: 'Direct Factory Sivakasi Crackers at Wholesale Price',
   address: 'No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai',
   phone: '+91 98765 43210',
-  cashierName: 'Kumar (Cashier 1)',
+  cashierName: 'Owner/Admin',
   cashierPin: '1234',
   upiId: 'crackerstore@upi',
   printerType: 'thermal80', // 'thermal80', 'thermal58', 'a4'

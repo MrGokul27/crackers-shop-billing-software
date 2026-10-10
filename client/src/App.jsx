@@ -362,6 +362,7 @@ export default function App() {
     return (
       p.name.toLowerCase().includes(q) ||
       (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+      (p.brand && p.brand.toLowerCase().includes(q)) ||
       p.category.toLowerCase().includes(q)
     );
   });

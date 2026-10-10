@@ -108,6 +108,7 @@ app.get('/api/products', (req, res) => {
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(q) || 
         (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
         p.category.toLowerCase().includes(q)
       );
     }
@@ -136,22 +137,25 @@ app.get('/api/products/barcode/:barcode', (req, res) => {
 // POST add new product
 app.post('/api/products', (req, res) => {
   try {
-    const { name, category, price, mrp, barcode, emoji, unit, inStock } = req.body;
+    const { name, category, price, mrp, barcode, emoji, unit, inStock, brand, stock } = req.body;
     if (!name || !price) {
       return res.status(400).json({ success: false, message: 'Name and price are required' });
     }
 
     const products = db.getProducts();
+    const stockQty = stock !== undefined && stock !== '' ? parseInt(stock, 10) : 50;
     const newProduct = {
       id: 'p_' + Date.now(),
       name: name.trim(),
       category: category || 'General',
+      brand: brand ? brand.trim() : 'Standard Fireworks',
+      stock: isNaN(stockQty) ? 50 : stockQty,
       price: parseFloat(price) || 0,
       mrp: parseFloat(mrp) || parseFloat(price) || 0,
       barcode: barcode ? barcode.trim() : String(Math.floor(1000000 + Math.random() * 9000000)),
       emoji: emoji || '🎆',
       unit: unit || 'Box',
-      inStock: inStock !== undefined ? inStock : true
+      inStock: inStock !== undefined ? inStock : (stockQty > 0)
     };
 
     products.unshift(newProduct);
@@ -181,9 +185,18 @@ app.put('/api/products/:id', (req, res) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
+    const stockQty = req.body.stock !== undefined && req.body.stock !== '' 
+      ? parseInt(req.body.stock, 10) 
+      : products[index].stock;
+
     const updated = {
       ...products[index],
       ...req.body,
+      brand: req.body.brand !== undefined ? req.body.brand.trim() : (products[index].brand || ''),
+      stock: stockQty !== undefined && !isNaN(stockQty) ? stockQty : (products[index].stock ?? 50),
+      inStock: req.body.inStock !== undefined 
+        ? req.body.inStock 
+        : (stockQty !== undefined ? stockQty > 0 : products[index].inStock),
       price: req.body.price !== undefined ? parseFloat(req.body.price) : products[index].price,
       mrp: req.body.mrp !== undefined ? parseFloat(req.body.mrp) : products[index].mrp
     };
@@ -291,6 +304,31 @@ app.post('/api/bills', (req, res) => {
 
     bills.unshift(newBill);
     db.saveBills(bills);
+
+    // Deduct stock for items in this bill
+    const currentProducts = db.getProducts();
+    let productsUpdated = false;
+    items.forEach(item => {
+      const prod = currentProducts.find(p => p.id === item.id);
+      if (prod) {
+        const itemQty = parseInt(item.qty, 10) || 1;
+        const currentStock = prod.stock !== undefined ? parseInt(prod.stock, 10) : 50;
+        const newStock = Math.max(0, currentStock - itemQty);
+        prod.stock = newStock;
+        if (newStock === 0) {
+          prod.inStock = false;
+        }
+        productsUpdated = true;
+      }
+    });
+
+    if (productsUpdated) {
+      db.saveProducts(currentProducts);
+      broadcastEvent('products_updated', {
+        action: 'stock_deducted',
+        products: currentProducts
+      });
+    }
 
     // Real-time broadcast to all connected devices
     broadcastEvent('bill_created', {

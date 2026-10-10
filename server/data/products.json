@@ -8,7 +8,9 @@
     "barcode": "8901001",
     "emoji": "✨",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 100
   },
   {
     "id": "p2",
@@ -19,7 +21,9 @@
     "barcode": "8901002",
     "emoji": "🎇",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 98
   },
   {
     "id": "p3",
@@ -30,7 +34,9 @@
     "barcode": "8901003",
     "emoji": "✨",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 96
   },
   {
     "id": "p4",
@@ -41,7 +47,9 @@
     "barcode": "8901004",
     "emoji": "🎆",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 94
   },
   {
     "id": "p5",
@@ -52,7 +60,9 @@
     "barcode": "8901005",
     "emoji": "✨",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 92
   },
   {
     "id": "p6",
@@ -63,7 +73,9 @@
     "barcode": "8902001",
     "emoji": "🪴",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 90
   },
   {
     "id": "p7",
@@ -74,7 +86,9 @@
     "barcode": "8902002",
     "emoji": "🏺",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 88
   },
   {
     "id": "p8",
@@ -85,7 +99,9 @@
     "barcode": "8902003",
     "emoji": "⛲",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 86
   },
   {
     "id": "p9",
@@ -96,7 +112,9 @@
     "barcode": "8902004",
     "emoji": "🌸",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 84
   },
   {
     "id": "p10",
@@ -107,7 +125,9 @@
     "barcode": "8903001",
     "emoji": "🌀",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 82
   },
   {
     "id": "p11",
@@ -118,7 +138,9 @@
     "barcode": "8903002",
     "emoji": "🎡",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 80
   },
   {
     "id": "p12",
@@ -129,7 +151,9 @@
     "barcode": "8903003",
     "emoji": "💫",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 78
   },
   {
     "id": "p13",
@@ -140,7 +164,9 @@
     "barcode": "8904001",
     "emoji": "🚀",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 76
   },
   {
     "id": "p14",
@@ -151,7 +177,9 @@
     "barcode": "8904002",
     "emoji": "🚀",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 74
   },
   {
     "id": "p15",
@@ -162,7 +190,9 @@
     "barcode": "8904003",
     "emoji": "🌌",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 72
   },
   {
     "id": "p16",
@@ -173,7 +203,9 @@
     "barcode": "8905001",
     "emoji": "🧨",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 70
   },
   {
     "id": "p17",
@@ -184,7 +216,9 @@
     "barcode": "8905002",
     "emoji": "🧧",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 68
   },
   {
     "id": "p19",
@@ -195,7 +229,9 @@
     "barcode": "8905004",
     "emoji": "💥",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 66
   },
   {
     "id": "p20",
@@ -206,7 +242,9 @@
     "barcode": "8906001",
     "emoji": "💥",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 64
   },
   {
     "id": "p21",
@@ -217,7 +255,9 @@
     "barcode": "8906002",
     "emoji": "⚡",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 62
   },
   {
     "id": "p22",
@@ -228,7 +268,9 @@
     "barcode": "8906003",
     "emoji": "💣",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Cock Brand",
+    "stock": 60
   },
   {
     "id": "p24",
@@ -239,7 +281,9 @@
     "barcode": "8907001",
     "emoji": "🎆",
     "unit": "Pce",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 58
   },
   {
     "id": "p25",
@@ -250,7 +294,9 @@
     "barcode": "8907002",
     "emoji": "🌠",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 56
   },
   {
     "id": "p26",
@@ -261,7 +307,9 @@
     "barcode": "8907003",
     "emoji": "🎇",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 54
   },
   {
     "id": "p27",
@@ -272,7 +320,9 @@
     "barcode": "8907004",
     "emoji": "🎆",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Sony Fireworks",
+    "stock": 52
   },
   {
     "id": "p28",
@@ -283,7 +333,9 @@
     "barcode": "8908001",
     "emoji": "🐍",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Anil Fireworks",
+    "stock": 50
   },
   {
     "id": "p29",
@@ -294,7 +346,9 @@
     "barcode": "8908002",
     "emoji": "🍿",
     "unit": "Pkt",
-    "inStock": true
+    "inStock": true,
+    "brand": "Anil Fireworks",
+    "stock": 48
   },
   {
     "id": "p30",
@@ -305,7 +359,9 @@
     "barcode": "8908003",
     "emoji": "💨",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Anil Fireworks",
+    "stock": 46
   },
   {
     "id": "p31",
@@ -316,7 +372,9 @@
     "barcode": "8908004",
     "emoji": "🦚",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Anil Fireworks",
+    "stock": 44
   },
   {
     "id": "p32",
@@ -327,7 +385,9 @@
     "barcode": "8909001",
     "emoji": "🎁",
     "unit": "Box",
-    "inStock": true
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 42
   },
   {
     "id": "p33",
@@ -338,6 +398,73 @@
     "barcode": "8909002",
     "emoji": "🎁",
     "unit": "Box",
+    "inStock": true,
+    "brand": "Standard Fireworks",
+    "stock": 40
+  },
+  {
+    "id": "p35",
+    "name": "Standard Gold Deluxe 28 Sound Giant",
+    "category": "Brand",
+    "brand": "Standard Fireworks",
+    "stock": 85,
+    "price": 140,
+    "mrp": 220,
+    "barcode": "8910001",
+    "emoji": "🏷️",
+    "unit": "Box",
+    "inStock": true
+  },
+  {
+    "id": "p36",
+    "name": "Sony Premium 50 Shots Multi Color Cake",
+    "category": "Brand",
+    "brand": "Sony Fireworks",
+    "stock": 30,
+    "price": 950,
+    "mrp": 1600,
+    "barcode": "8910002",
+    "emoji": "🌠",
+    "unit": "Box",
+    "inStock": true
+  },
+  {
+    "id": "p37",
+    "name": "Cock Brand Special Mayil Peacock Fountain",
+    "category": "Brand",
+    "brand": "Cock Brand",
+    "stock": 65,
+    "price": 210,
+    "mrp": 350,
+    "barcode": "8910003",
+    "emoji": "🦚",
+    "unit": "Box",
+    "inStock": true
+  },
+  {
+    "id": "p38",
+    "name": "Assorted Clearance Stock Box (Bulk Pack)",
+    "category": "Stock",
+    "brand": "Standard Fireworks",
+    "stock": 50,
+    "price": 450,
+    "mrp": 850,
+    "barcode": "8911001",
+    "emoji": "📦",
+    "unit": "Box",
+    "inStock": true
+  },
+  {
+    "id": "p39",
+    "name": "Wholesale Stock 1000 Wala Heavy Garland",
+    "category": "Stock",
+    "brand": "Ayyan Fireworks",
+    "stock": 90,
+    "price": 380,
+    "mrp": 650,
+    "barcode": "8911002",
+    "emoji": "🧨",
+    "unit": "Pkt",
     "inStock": true
   }
 ]

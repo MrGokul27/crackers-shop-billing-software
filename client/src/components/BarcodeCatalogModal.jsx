@@ -12,7 +12,11 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
     if (!matchesCat) return false;
     if (!searchTerm) return true;
     const q = searchTerm.toLowerCase();
-    return p.name.toLowerCase().includes(q) || (p.barcode && p.barcode.includes(q));
+    return (
+      p.name.toLowerCase().includes(q) || 
+      (p.barcode && p.barcode.includes(q)) ||
+      (p.brand && p.brand.toLowerCase().includes(q))
+    );
   });
 
   const handlePrintBarcodes = () => {
@@ -111,9 +115,28 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                   <div className="barcode-sticker-card h-100">
                     {/* Item Title */}
                     <div className="d-flex align-items-center justify-content-between border-bottom pb-1 mb-1">
-                      <span className="badge bg-light text-dark border small" style={{ fontSize: '0.68rem' }}>
-                        {p.category}
-                      </span>
+                      <div className="d-flex align-items-center gap-1 flex-wrap">
+                        <span className="badge bg-light text-dark border small" style={{ fontSize: '0.68rem' }}>
+                          {p.category}
+                        </span>
+                        {p.brand && (
+                          <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small" style={{ fontSize: '0.65rem' }}>
+                            <i className="fa-solid fa-tag me-1" style={{ fontSize: '0.6rem' }}></i>
+                            {p.brand}
+                          </span>
+                        )}
+                        {p.stock !== undefined && (
+                          <span className={`badge small ${
+                            p.stock <= 0 
+                              ? 'bg-danger text-white' 
+                              : p.stock < 10 
+                                ? 'bg-warning text-dark' 
+                                : 'bg-success bg-opacity-10 text-success border border-success border-opacity-25'
+                          }`} style={{ fontSize: '0.65rem' }}>
+                            {p.stock <= 0 ? '0 Stock' : `${p.stock} in stock`}
+                          </span>
+                        )}
+                      </div>
                       <span className="fw-bold text-success font-monospace" style={{ fontSize: '0.95rem' }}>
                         ₹{p.price}
                       </span>

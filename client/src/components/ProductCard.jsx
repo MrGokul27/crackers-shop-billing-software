@@ -29,10 +29,27 @@ export default function ProductCard({ product, inCartQty, onAddToCart, onUpdateQ
           {product.emoji || '🎆'}
         </div>
         <div className="flex-grow-1" style={{ minWidth: 0 }}>
-          <div className="d-flex align-items-center gap-1">
+          <div className="d-flex align-items-center gap-1 flex-wrap">
             <span className="badge bg-light text-secondary border rounded-pill px-2" style={{ fontSize: '0.68rem' }}>
               {product.category}
             </span>
+            {product.brand && (
+              <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2" style={{ fontSize: '0.68rem' }} title={`Brand: ${product.brand}`}>
+                <i className="fa-solid fa-tag me-1" style={{ fontSize: '0.6rem' }}></i>{product.brand}
+              </span>
+            )}
+            {product.stock !== undefined && (
+              <span className={`badge rounded-pill px-2 ${
+                product.stock <= 0 
+                  ? 'bg-danger text-white' 
+                  : product.stock < 10 
+                    ? 'bg-warning text-dark' 
+                    : 'bg-success bg-opacity-10 text-success border border-success border-opacity-25'
+              }`} style={{ fontSize: '0.68rem' }} title={`Stock: ${product.stock}`}>
+                <i className="fa-solid fa-boxes-stacked me-1" style={{ fontSize: '0.6rem' }}></i>
+                {product.stock <= 0 ? 'Out of stock' : `${product.stock} in stock`}
+              </span>
+            )}
             {product.unit && (
               <span className="badge bg-secondary bg-opacity-10 text-muted rounded-pill px-1" style={{ fontSize: '0.65rem' }}>
                 {product.unit}

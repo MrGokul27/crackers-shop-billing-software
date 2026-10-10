@@ -10,10 +10,22 @@ const CATEGORIES = [
   'Garlands',
   'Sky Shots',
   'Kids Special',
-  'Gift Box'
+  'Gift Box',
+  'Brand',
+  'Stock'
 ];
 
-const EMOJIS = ['✨', '🎇', '🎆', '🪴', '🏺', '⛲', '🌸', '🌀', '🎡', '💫', '🚀', '🌌', '🧨', '🧧', '💥', '⚡', '💣', '🌠', '🍿', '🐍', '💨', '🦚', '🎁', '👑'];
+const COMMON_BRANDS = [
+  'Standard Fireworks',
+  'Cock Brand',
+  'Sony Fireworks',
+  'Ayyan Fireworks',
+  'Anil Fireworks',
+  'Coronation Fireworks',
+  'Sri Kaliswari'
+];
+
+const EMOJIS = ['✨', '🎇', '🎆', '🪴', '🏺', '⛲', '🌸', '🌀', '🎡', '💫', '🚀', '🌌', '🧨', '🧧', '💥', '⚡', '💣', '🌠', '🍿', '🐍', '💨', '🦚', '🎁', '👑', '🏷️', '📦'];
 
 export default function ProductManagerModal({ products, onRefreshProducts, onClose }) {
   const [editingProduct, setEditingProduct] = useState(null);
@@ -23,6 +35,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
   const [formData, setFormData] = useState({
     name: '',
     category: 'Sparklers',
+    brand: 'Standard Fireworks',
+    stock: 50,
     price: '',
     mrp: '',
     barcode: '',
@@ -37,6 +51,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     setFormData({
       name: '',
       category: 'Sparklers',
+      brand: 'Standard Fireworks',
+      stock: 50,
       price: '',
       mrp: '',
       barcode: String(Math.floor(1000000 + Math.random() * 9000000)),
@@ -52,6 +68,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     setFormData({
       name: p.name,
       category: p.category,
+      brand: p.brand || 'Standard Fireworks',
+      stock: p.stock !== undefined ? p.stock : 50,
       price: p.price,
       mrp: p.mrp || p.price,
       barcode: p.barcode || '',
@@ -118,12 +136,17 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
   const filtered = products.filter(p => {
     if (!searchTerm) return true;
     const q = searchTerm.toLowerCase();
-    return p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || (p.barcode && p.barcode.includes(q));
+    return (
+      p.name.toLowerCase().includes(q) || 
+      p.category.toLowerCase().includes(q) || 
+      (p.brand && p.brand.toLowerCase().includes(q)) || 
+      (p.barcode && p.barcode.includes(q))
+    );
   });
 
   return (
     <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.65)' }}>
-      <div className="modal-dialog modal-dialog-centered modal-lg">
+      <div className="modal-dialog modal-dialog-centered modal-xl">
         <div className="modal-content shadow-lg border-0">
           <div className="modal-header bg-dark text-white py-2 px-3">
             <h6 className="modal-title fw-bold">
@@ -154,7 +177,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
 
                 <div className="row g-2">
                   {/* Name */}
-                  <div className="col-md-6">
+                  <div className="col-md-5">
                     <label className="form-label small fw-bold mb-1">Cracker Name *</label>
                     <input
                       type="text"
@@ -180,18 +203,24 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                     </select>
                   </div>
 
-                  {/* Emoji Icon */}
-                  <div className="col-md-3">
-                    <label className="form-label small fw-bold mb-1">Icon / Emoji</label>
-                    <select
-                      className="form-select form-select-sm"
-                      value={formData.emoji}
-                      onChange={(e) => setFormData({ ...formData, emoji: e.target.value })}
-                    >
-                      {EMOJIS.map(em => (
-                        <option key={em} value={em}>{em} Icon</option>
+                  {/* Brand */}
+                  <div className="col-md-4">
+                    <label className="form-label small fw-bold mb-1">
+                      <i className="fa-solid fa-tag text-primary me-1"></i> Brand
+                    </label>
+                    <input
+                      type="text"
+                      list="brandOptions"
+                      className="form-control form-control-sm"
+                      placeholder="e.g. Standard Fireworks / Cock Brand"
+                      value={formData.brand}
+                      onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                    />
+                    <datalist id="brandOptions">
+                      {COMMON_BRANDS.map(b => (
+                        <option key={b} value={b} />
                       ))}
-                    </select>
+                    </datalist>
                   </div>
 
                   {/* Selling Price */}
@@ -209,7 +238,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                   </div>
 
                   {/* MRP */}
-                  <div className="col-md-3">
+                  <div className="col-md-2">
                     <label className="form-label small fw-bold mb-1">MRP Price (₹)</label>
                     <input
                       type="number"
@@ -221,8 +250,23 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                     />
                   </div>
 
+                  {/* Stock Quantity */}
+                  <div className="col-md-2">
+                    <label className="form-label small fw-bold mb-1">
+                      <i className="fa-solid fa-boxes-stacked text-success me-1"></i> Stock Qty
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control form-control-sm font-monospace fw-bold"
+                      placeholder="50"
+                      min="0"
+                      value={formData.stock}
+                      onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value, 10) || 0 })}
+                    />
+                  </div>
+
                   {/* Unit */}
-                  <div className="col-md-3">
+                  <div className="col-md-2">
                     <label className="form-label small fw-bold mb-1">Unit</label>
                     <input
                       type="text"
@@ -233,8 +277,22 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                     />
                   </div>
 
-                  {/* Barcode with Auto-Generate */}
+                  {/* Emoji Icon */}
                   <div className="col-md-3">
+                    <label className="form-label small fw-bold mb-1">Icon / Emoji</label>
+                    <select
+                      className="form-select form-select-sm"
+                      value={formData.emoji}
+                      onChange={(e) => setFormData({ ...formData, emoji: e.target.value })}
+                    >
+                      {EMOJIS.map(em => (
+                        <option key={em} value={em}>{em} Icon</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Barcode with Auto-Generate */}
+                  <div className="col-12 col-md-6">
                     <div className="d-flex justify-content-between align-items-center">
                       <label className="form-label small fw-bold mb-1">Barcode</label>
                       <button
@@ -254,21 +312,21 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                       onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                     />
                   </div>
-
-                  {/* Live Barcode Preview Box */}
-                  {formData.barcode && (
-                    <div className="col-12 text-center bg-white p-2 rounded border mt-2">
-                      <div className="small text-muted mb-1">Live Generated Scannable Barcode:</div>
-                      <BarcodeGenerator
-                        value={formData.barcode}
-                        width={1.6}
-                        height={42}
-                        fontSize={12}
-                        displayValue={true}
-                      />
-                    </div>
-                  )}
                 </div>
+
+                {/* Live Barcode Preview Box */}
+                {formData.barcode && (
+                  <div className="col-12 text-center bg-white p-2 rounded border mt-2">
+                    <div className="small text-muted mb-1">Live Generated Scannable Barcode:</div>
+                    <BarcodeGenerator
+                      value={formData.barcode}
+                      width={1.6}
+                      height={42}
+                      fontSize={12}
+                      displayValue={true}
+                    />
+                  </div>
+                )}
 
                 <div className="mt-2 text-end">
                   <button type="submit" className="btn btn-success btn-sm px-4 fw-bold">
@@ -287,7 +345,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Filter cracker items..."
+                  placeholder="Filter cracker, brand, barcode..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -311,6 +369,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                   <tr>
                     <th>Item</th>
                     <th>Category</th>
+                    <th>Brand</th>
+                    <th>Stock</th>
                     <th>Price</th>
                     <th>Barcode</th>
                     <th className="text-end">Action</th>
@@ -327,6 +387,26 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                         <span className="badge bg-light text-secondary border">
                           {p.category}
                         </span>
+                      </td>
+                      <td>
+                        <span className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                          <i className="fa-solid fa-tag me-1" style={{ fontSize: '0.65rem' }}></i>
+                          {p.brand || 'Standard'}
+                        </span>
+                      </td>
+                      <td>
+                        {(p.stock !== undefined && p.stock <= 0) ? (
+                          <span className="badge bg-danger">0 Out of Stock</span>
+                        ) : (p.stock !== undefined && p.stock < 10) ? (
+                          <span className="badge bg-warning text-dark font-monospace fw-bold">
+                            <i className="fa-solid fa-triangle-exclamation me-1"></i> {p.stock} Low
+                          </span>
+                        ) : (
+                          <span className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 font-monospace fw-bold">
+                            <i className="fa-solid fa-boxes-stacked me-1" style={{ fontSize: '0.65rem' }}></i>
+                            {p.stock !== undefined ? p.stock : 50} in stock
+                          </span>
+                        )}
                       </td>
                       <td className="fw-bold text-success font-monospace fs-6">
                         ₹{p.price}

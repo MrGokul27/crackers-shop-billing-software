@@ -10,7 +10,9 @@ const CATEGORIES = [
   { id: 'Garlands', label: 'Garlands (சரவெடி)', emoji: '🧨' },
   { id: 'Sky Shots', label: 'Sky Shots (வானவெடி)', emoji: '🎆' },
   { id: 'Kids Special', label: 'Kids Special', emoji: '🍿' },
-  { id: 'Gift Box', label: 'Gift Box', emoji: '🎁' }
+  { id: 'Gift Box', label: 'Gift Box', emoji: '🎁' },
+  { id: 'Brand', label: 'Brand (பிராண்ட்)', emoji: '🏷️' },
+  { id: 'Stock', label: 'Stock (ஸ்டாக்)', emoji: '📦' }
 ];
 
 export default function CategoryFilter({ activeCategory, onSelectCategory, counts }) {

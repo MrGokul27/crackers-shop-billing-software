@@ -93,9 +93,9 @@ app.get('/api/network-info', (req, res) => {
 
 // ---------------- PRODUCTS ENDPOINTS ----------------
 // GET all products
-app.get('/api/products', (req, res) => {
+app.get('/api/products', async (req, res) => {
   try {
-    const products = db.getProducts();
+    const products = await db.getProducts();
     const { category, search } = req.query;
     let filtered = products;
 
@@ -120,9 +120,9 @@ app.get('/api/products', (req, res) => {
 });
 
 // GET product by barcode / quick lookup
-app.get('/api/products/barcode/:barcode', (req, res) => {
+app.get('/api/products/barcode/:barcode', async (req, res) => {
   try {
-    const products = db.getProducts();
+    const products = await db.getProducts();
     const barcode = req.params.barcode.trim();
     const product = products.find(p => p.barcode === barcode);
     if (!product) {
@@ -135,14 +135,14 @@ app.get('/api/products/barcode/:barcode', (req, res) => {
 });
 
 // POST add new product
-app.post('/api/products', (req, res) => {
+app.post('/api/products', async (req, res) => {
   try {
     const { name, category, price, mrp, barcode, emoji, unit, inStock, brand, stock } = req.body;
     if (!name || !price) {
       return res.status(400).json({ success: false, message: 'Name and price are required' });
     }
 
-    const products = db.getProducts();
+    const products = await db.getProducts();
     const stockQty = stock !== undefined && stock !== '' ? parseInt(stock, 10) : 50;
     const newProduct = {
       id: 'p_' + Date.now(),
@@ -159,7 +159,7 @@ app.post('/api/products', (req, res) => {
     };
 
     products.unshift(newProduct);
-    db.saveProducts(products);
+    await db.saveProducts(products);
 
     // Real-time broadcast to all connected devices
     broadcastEvent('products_updated', {
@@ -175,10 +175,10 @@ app.post('/api/products', (req, res) => {
 });
 
 // PUT update product
-app.put('/api/products/:id', (req, res) => {
+app.put('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const products = db.getProducts();
+    const products = await db.getProducts();
     const index = products.findIndex(p => p.id === id);
 
     if (index === -1) {
@@ -202,7 +202,7 @@ app.put('/api/products/:id', (req, res) => {
     };
 
     products[index] = updated;
-    db.saveProducts(products);
+    await db.saveProducts(products);
 
     // Real-time broadcast to all connected devices
     broadcastEvent('products_updated', {
@@ -218,10 +218,10 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 // DELETE product
-app.delete('/api/products/:id', (req, res) => {
+app.delete('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    let products = db.getProducts();
+    let products = await db.getProducts();
     const exists = products.some(p => p.id === id);
 
     if (!exists) {
@@ -229,7 +229,7 @@ app.delete('/api/products/:id', (req, res) => {
     }
 
     products = products.filter(p => p.id !== id);
-    db.saveProducts(products);
+    await db.saveProducts(products);
 
     // Real-time broadcast to all connected devices
     broadcastEvent('products_updated', {
@@ -245,14 +245,14 @@ app.delete('/api/products/:id', (req, res) => {
 });
 
 // POST bulk sync / restore products from client
-app.post('/api/products/sync', (req, res) => {
+app.post('/api/products/sync', async (req, res) => {
   try {
     const { products } = req.body;
     if (!Array.isArray(products)) {
       return res.status(400).json({ success: false, message: 'Products array is required' });
     }
 
-    db.saveProducts(products);
+    await db.saveProducts(products);
     broadcastEvent('products_updated', {
       action: 'sync',
       products
@@ -266,9 +266,9 @@ app.post('/api/products/sync', (req, res) => {
 
 // ---------------- BILLS & CHECKOUT ENDPOINTS ----------------
 // GET all bills with filter
-app.get('/api/bills', (req, res) => {
+app.get('/api/bills', async (req, res) => {
   try {
-    const bills = db.getBills();
+    const bills = await db.getBills();
     const sorted = [...bills].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json({ success: true, count: sorted.length, data: sorted });
   } catch (err) {
@@ -277,7 +277,7 @@ app.get('/api/bills', (req, res) => {
 });
 
 // POST create new bill
-app.post('/api/bills', (req, res) => {
+app.post('/api/bills', async (req, res) => {
   try {
     const { items, subtotal, discount, grandTotal, paymentMethod, amountReceived, changeToReturn, customerPhone, cashier } = req.body;
 
@@ -285,8 +285,8 @@ app.post('/api/bills', (req, res) => {
       return res.status(400).json({ success: false, message: 'Cart items are required' });
     }
 
-    const bills = db.getBills();
-    const settings = db.getSettings();
+    const bills = await db.getBills();
+    const settings = await db.getSettings();
 
     const nextBillSeq = bills.length + 1001;
     const billNo = `CRK-${nextBillSeq}`;
@@ -323,10 +323,10 @@ app.post('/api/bills', (req, res) => {
     };
 
     bills.unshift(newBill);
-    db.saveBills(bills);
+    await db.saveBills(bills);
 
     // Deduct stock for items in this bill
-    const currentProducts = db.getProducts();
+    const currentProducts = await db.getProducts();
     let productsUpdated = false;
     items.forEach(item => {
       const prod = currentProducts.find(p => p.id === item.id);
@@ -343,7 +343,7 @@ app.post('/api/bills', (req, res) => {
     });
 
     if (productsUpdated) {
-      db.saveProducts(currentProducts);
+      await db.saveProducts(currentProducts);
       broadcastEvent('products_updated', {
         action: 'stock_deducted',
         products: currentProducts
@@ -363,10 +363,10 @@ app.post('/api/bills', (req, res) => {
 });
 
 // GET single bill
-app.get('/api/bills/:id', (req, res) => {
+app.get('/api/bills/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const bills = db.getBills();
+    const bills = await db.getBills();
     const bill = bills.find(b => b.id === id || b.billNo === id);
     if (!bill) {
       return res.status(404).json({ success: false, message: 'Bill not found' });
@@ -378,14 +378,14 @@ app.get('/api/bills/:id', (req, res) => {
 });
 
 // POST bulk sync / restore bills from client
-app.post('/api/bills/sync', (req, res) => {
+app.post('/api/bills/sync', async (req, res) => {
   try {
     const { bills } = req.body;
     if (!Array.isArray(bills)) {
       return res.status(400).json({ success: false, message: 'Bills array is required' });
     }
 
-    const existing = db.getBills();
+    const existing = await db.getBills();
     const existingIds = new Set(existing.map(b => b.id || b.billNo));
     const merged = [...existing];
     bills.forEach(b => {
@@ -395,7 +395,7 @@ app.post('/api/bills/sync', (req, res) => {
     });
 
     merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    db.saveBills(merged);
+    await db.saveBills(merged);
 
     res.json({ success: true, count: merged.length, data: merged });
   } catch (err) {
@@ -404,20 +404,26 @@ app.post('/api/bills/sync', (req, res) => {
 });
 
 // GET cloud & persistence health status
-app.get('/api/status', (req, res) => {
-  res.json({
-    success: true,
-    cloudConnected: db.isCloudConnected ? db.isCloudConnected() : false,
-    productsCount: db.getProducts().length,
-    billsCount: db.getBills().length,
-    uptime: Math.round(process.uptime())
-  });
+app.get('/api/status', async (req, res) => {
+  try {
+    const products = await db.getProducts();
+    const bills = await db.getBills();
+    res.json({
+      success: true,
+      cloudConnected: db.isCloudConnected ? db.isCloudConnected() : false,
+      productsCount: products.length,
+      billsCount: bills.length,
+      uptime: Math.round(process.uptime())
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // ---------------- STATS & SUMMARY ----------------
-app.get('/api/stats', (req, res) => {
+app.get('/api/stats', async (req, res) => {
   try {
-    const bills = db.getBills();
+    const bills = await db.getBills();
     const today = new Date().toISOString().split('T')[0];
 
     const todayBills = bills.filter(b => b.createdAt.startsWith(today));
@@ -455,20 +461,20 @@ app.get('/api/stats', (req, res) => {
 });
 
 // ---------------- SETTINGS ENDPOINTS ----------------
-app.get('/api/settings', (req, res) => {
+app.get('/api/settings', async (req, res) => {
   try {
-    const settings = db.getSettings();
+    const settings = await db.getSettings();
     res.json({ success: true, data: settings });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-app.post('/api/settings', (req, res) => {
+app.post('/api/settings', async (req, res) => {
   try {
-    const current = db.getSettings();
+    const current = await db.getSettings();
     const updated = { ...current, ...req.body };
-    db.saveSettings(updated);
+    await db.saveSettings(updated);
 
     // Real-time broadcast to all connected devices
     broadcastEvent('settings_updated', {

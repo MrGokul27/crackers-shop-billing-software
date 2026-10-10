@@ -191,6 +191,18 @@ export default function App() {
     fetchProducts();
     fetchSettings();
 
+    // Periodic Background Sync every 8 seconds so Local & Live always match instantly
+    const intervalId = setInterval(() => {
+      fetch('/api/products')
+        .then(res => res.json())
+        .then(json => {
+          if (json.success && Array.isArray(json.data)) {
+            setProducts(json.data);
+          }
+        })
+        .catch(() => {});
+    }, 8000);
+
     // Connect to Server-Sent Events (SSE) for Real-Time Multi-Device Sync
     let eventSource;
     try {
@@ -233,6 +245,7 @@ export default function App() {
     }
 
     return () => {
+      clearInterval(intervalId);
       if (eventSource) eventSource.close();
     };
   }, []);

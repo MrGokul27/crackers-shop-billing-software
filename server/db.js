@@ -131,57 +131,93 @@ export async function initMongo() {
 export const db = {
   isCloudConnected: () => isMongoConnected,
 
-  getProducts: () => readJsonFile(PRODUCTS_FILE, DEFAULT_PRODUCTS),
-  saveProducts: (products) => {
+  getProducts: async () => {
+    if (isMongoConnected && mongoDb) {
+      try {
+        const remoteProducts = await mongoDb.collection('products').find({}).toArray();
+        const cleanProds = remoteProducts.map(({ _id, ...rest }) => rest);
+        writeJsonFile(PRODUCTS_FILE, cleanProds);
+        return cleanProds;
+      } catch (e) {
+        console.error('Error reading products from MongoDB, falling back to local file:', e.message);
+      }
+    }
+    return readJsonFile(PRODUCTS_FILE, DEFAULT_PRODUCTS);
+  },
+
+  saveProducts: async (products) => {
     writeJsonFile(PRODUCTS_FILE, products);
     if (isMongoConnected && mongoDb) {
-      (async () => {
-        try {
-          const col = mongoDb.collection('products');
-          await col.deleteMany({});
-          if (products && products.length > 0) {
-            await col.insertMany(products.map(p => ({ ...p })));
-          }
-        } catch (e) {
-          console.error('Error syncing products to MongoDB:', e.message);
+      try {
+        const col = mongoDb.collection('products');
+        await col.deleteMany({});
+        if (products && products.length > 0) {
+          await col.insertMany(products.map(p => ({ ...p })));
         }
-      })();
+      } catch (e) {
+        console.error('Error syncing products to MongoDB:', e.message);
+      }
     }
   },
   
-  getBills: () => readJsonFile(BILLS_FILE, []),
-  saveBills: (bills) => {
+  getBills: async () => {
+    if (isMongoConnected && mongoDb) {
+      try {
+        const remoteBills = await mongoDb.collection('bills').find({}).sort({ createdAt: -1 }).toArray();
+        const cleanBills = remoteBills.map(({ _id, ...rest }) => rest);
+        writeJsonFile(BILLS_FILE, cleanBills);
+        return cleanBills;
+      } catch (e) {
+        console.error('Error reading bills from MongoDB, falling back to local file:', e.message);
+      }
+    }
+    return readJsonFile(BILLS_FILE, []);
+  },
+
+  saveBills: async (bills) => {
     writeJsonFile(BILLS_FILE, bills);
     if (isMongoConnected && mongoDb) {
-      (async () => {
-        try {
-          const col = mongoDb.collection('bills');
-          await col.deleteMany({});
-          if (bills && bills.length > 0) {
-            await col.insertMany(bills.map(b => ({ ...b })));
-          }
-        } catch (e) {
-          console.error('Error syncing bills to MongoDB:', e.message);
+      try {
+        const col = mongoDb.collection('bills');
+        await col.deleteMany({});
+        if (bills && bills.length > 0) {
+          await col.insertMany(bills.map(b => ({ ...b })));
         }
-      })();
+      } catch (e) {
+        console.error('Error syncing bills to MongoDB:', e.message);
+      }
     }
   },
   
-  getSettings: () => readJsonFile(SETTINGS_FILE, DEFAULT_SETTINGS),
-  saveSettings: (settings) => {
+  getSettings: async () => {
+    if (isMongoConnected && mongoDb) {
+      try {
+        const remoteSettings = await mongoDb.collection('settings').findOne({ id: 'app_settings' });
+        if (remoteSettings) {
+          const { _id, id, ...cleanSettings } = remoteSettings;
+          writeJsonFile(SETTINGS_FILE, cleanSettings);
+          return cleanSettings;
+        }
+      } catch (e) {
+        console.error('Error reading settings from MongoDB, falling back to local file:', e.message);
+      }
+    }
+    return readJsonFile(SETTINGS_FILE, DEFAULT_SETTINGS);
+  },
+
+  saveSettings: async (settings) => {
     writeJsonFile(SETTINGS_FILE, settings);
     if (isMongoConnected && mongoDb) {
-      (async () => {
-        try {
-          await mongoDb.collection('settings').updateOne(
-            { id: 'app_settings' },
-            { $set: { id: 'app_settings', ...settings } },
-            { upsert: true }
-          );
-        } catch (e) {
-          console.error('Error syncing settings to MongoDB:', e.message);
-        }
-      })();
+      try {
+        await mongoDb.collection('settings').updateOne(
+          { id: 'app_settings' },
+          { $set: { id: 'app_settings', ...settings } },
+          { upsert: true }
+        );
+      } catch (e) {
+        console.error('Error syncing settings to MongoDB:', e.message);
+      }
     }
   }
 };
+

@@ -147,6 +147,13 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       (p.brand && p.brand.toLowerCase().includes(q)) || 
       (p.barcode && p.barcode.includes(q))
     );
+  }).sort((a, b) => {
+    const idxA = CATEGORIES.findIndex(c => c.toLowerCase() === (a.category || '').toLowerCase());
+    const idxB = CATEGORIES.findIndex(c => c.toLowerCase() === (b.category || '').toLowerCase());
+    const orderA = idxA === -1 ? 999 : idxA;
+    const orderB = idxB === -1 ? 999 : idxB;
+    if (orderA !== orderB) return orderA - orderB;
+    return (a.name || '').localeCompare(b.name || '');
   });
 
   return (

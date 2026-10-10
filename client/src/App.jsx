@@ -19,6 +19,44 @@ import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
 import BarcodeCatalogModal from './components/BarcodeCatalogModal';
 import ConnectDevicesModal from './components/ConnectDevicesModal';
 
+const CATEGORY_ORDER = [
+  'SINGLE SHOT CRACKERS',
+  'SPARKLERS',
+  'CHAKKARS',
+  'TWINKLING STARS',
+  'CANDLES & LIGHTS',
+  'FLOWER POTS',
+  'ATOM BOMBS',
+  'LOOSE CRACKERS',
+  'FANCY VARIETIES',
+  'TIN',
+  'PEACOCK BIG',
+  'SHOTS',
+  '3 EFFECT SERIES',
+  'COLOUR SMOKE',
+  'GIFT BOXES',
+  'OTHERS'
+];
+
+const CATEGORY_EMOJIS = {
+  'SINGLE SHOT CRACKERS': '💥',
+  'SPARKLERS': '✨',
+  'CHAKKARS': '🌀',
+  'TWINKLING STARS': '⭐',
+  'CANDLES & LIGHTS': '🕯️',
+  'FLOWER POTS': '🪴',
+  'ATOM BOMBS': '💣',
+  'LOOSE CRACKERS': '🧨',
+  'FANCY VARIETIES': '🎇',
+  'TIN': '🥫',
+  'PEACOCK BIG': '🦚',
+  'SHOTS': '🎆',
+  '3 EFFECT SERIES': '🌠',
+  'COLOUR SMOKE': '💨',
+  'GIFT BOXES': '🎁',
+  'OTHERS': '🏷️'
+};
+
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -352,7 +390,7 @@ export default function App() {
     }, 200);
   };
 
-  // Filtered Products for Display
+  // Filtered Products for Display (strictly ordered by Category Order)
   const filteredProducts = products.filter(p => {
     const matchesCategory = activeCategory === 'All' || p.category.toLowerCase() === activeCategory.toLowerCase();
     if (!matchesCategory) return false;
@@ -365,7 +403,39 @@ export default function App() {
       (p.brand && p.brand.toLowerCase().includes(q)) ||
       p.category.toLowerCase().includes(q)
     );
+  }).sort((a, b) => {
+    const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (a.category || '').toLowerCase());
+    const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (b.category || '').toLowerCase());
+    const orderA = idxA === -1 ? 999 : idxA;
+    const orderB = idxB === -1 ? 999 : idxB;
+    if (orderA !== orderB) return orderA - orderB;
+    return (a.name || '').localeCompare(b.name || '');
   });
+
+  // Group products by category strictly according to CATEGORY_ORDER
+  const groupedProducts = CATEGORY_ORDER.reduce((acc, catName) => {
+    const items = filteredProducts.filter(p => (p.category || '').toLowerCase() === catName.toLowerCase());
+    if (items.length > 0) {
+      acc.push({
+        category: catName,
+        emoji: CATEGORY_EMOJIS[catName] || '🎆',
+        items
+      });
+    }
+    return acc;
+  }, []);
+
+  // Catch any items whose category is custom / not in CATEGORY_ORDER
+  const otherItems = filteredProducts.filter(
+    p => !CATEGORY_ORDER.some(c => c.toLowerCase() === (p.category || '').toLowerCase())
+  );
+  if (otherItems.length > 0) {
+    groupedProducts.push({
+      category: 'OTHERS',
+      emoji: '🏷️',
+      items: otherItems
+    });
+  }
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
@@ -502,20 +572,38 @@ export default function App() {
                   </button>
                 </div>
               ) : (
-                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-2">
-                  {filteredProducts.map(product => {
-                    const inCartItem = cart.find(i => i.id === product.id);
-                    return (
-                      <div className="col" key={product.id}>
-                        <ProductCard
-                          product={product}
-                          inCartQty={inCartItem ? inCartItem.qty : 0}
-                          onAddToCart={handleAddToCart}
-                          onUpdateQty={handleUpdateQty}
-                        />
+                <div className="d-flex flex-column gap-3">
+                  {groupedProducts.map(group => (
+                    <div key={group.category} className="category-group-block">
+                      {activeCategory === 'All' && (
+                        <div className="d-flex align-items-center gap-2 mb-2 pb-1 border-bottom">
+                          <span className="fs-6">{group.emoji}</span>
+                          <span className="fw-bold text-dark text-uppercase small" style={{ letterSpacing: '0.5px' }}>
+                            {group.category}
+                          </span>
+                          <span className="badge bg-secondary bg-opacity-25 text-dark rounded-pill" style={{ fontSize: '0.7rem' }}>
+                            {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
+                          </span>
+                          <div className="flex-grow-1 border-bottom opacity-25"></div>
+                        </div>
+                      )}
+                      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-2">
+                        {group.items.map(product => {
+                          const inCartItem = cart.find(i => i.id === product.id);
+                          return (
+                            <div className="col" key={product.id}>
+                              <ProductCard
+                                product={product}
+                                inCartQty={inCartItem ? inCartItem.qty : 0}
+                                onAddToCart={handleAddToCart}
+                                onUpdateQty={handleUpdateQty}
+                              />
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

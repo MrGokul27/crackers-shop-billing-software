@@ -1,11 +1,39 @@
 import React, { useState } from 'react';
 import BarcodeGenerator, { downloadProductSticker, downloadBarcodeImage } from './BarcodeGenerator';
 
+const CATEGORY_ORDER = [
+  'SINGLE SHOT CRACKERS',
+  'SPARKLERS',
+  'CHAKKARS',
+  'TWINKLING STARS',
+  'CANDLES & LIGHTS',
+  'FLOWER POTS',
+  'ATOM BOMBS',
+  'LOOSE CRACKERS',
+  'FANCY VARIETIES',
+  'TIN',
+  'PEACOCK BIG',
+  'SHOTS',
+  '3 EFFECT SERIES',
+  'COLOUR SMOKE',
+  'GIFT BOXES',
+  'OTHERS'
+];
+
 export default function BarcodeCatalogModal({ products, settings, onSimulateScan, onClose }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', ...new Set(products.map(p => p.category))];
+  const uniqueCats = [...new Set(products.map(p => p.category))];
+  uniqueCats.sort((a, b) => {
+    const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (a || '').toLowerCase());
+    const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (b || '').toLowerCase());
+    const orderA = idxA === -1 ? 999 : idxA;
+    const orderB = idxB === -1 ? 999 : idxB;
+    if (orderA !== orderB) return orderA - orderB;
+    return (a || '').localeCompare(b || '');
+  });
+  const categories = ['All', ...uniqueCats];
 
   const filtered = products.filter(p => {
     const matchesCat = selectedCategory === 'All' || p.category.toLowerCase() === selectedCategory.toLowerCase();
@@ -17,6 +45,13 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
       (p.barcode && p.barcode.includes(q)) ||
       (p.brand && p.brand.toLowerCase().includes(q))
     );
+  }).sort((a, b) => {
+    const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (a.category || '').toLowerCase());
+    const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (b.category || '').toLowerCase());
+    const orderA = idxA === -1 ? 999 : idxA;
+    const orderB = idxB === -1 ? 999 : idxB;
+    if (orderA !== orderB) return orderA - orderB;
+    return (a.name || '').localeCompare(b.name || '');
   });
 
   const handlePrintBarcodes = () => {

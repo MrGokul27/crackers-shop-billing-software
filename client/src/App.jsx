@@ -473,6 +473,19 @@ export default function App() {
                   <div className="spinner-border text-warning" role="status"></div>
                   <div className="mt-2 text-muted fw-bold">Loading Cracker Catalog...</div>
                 </div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-5 bg-white rounded-3 m-3 border shadow-sm">
+                  <div style={{ fontSize: '3.5rem' }}>📦</div>
+                  <h5 className="fw-bold text-dark mt-2">Cracker Inventory is Empty</h5>
+                  <p className="text-muted small mb-3">All previous items have been removed. You can now add your own fresh cracker products!</p>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm fw-bold px-4 rounded-pill shadow-sm"
+                    onClick={() => setShowProductManagerModal(true)}
+                  >
+                    <i className="fa-solid fa-plus me-1"></i> Add Your First Cracker Item
+                  </button>
+                </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-5 bg-white rounded-3 m-3 border">
                   <div style={{ fontSize: '3rem' }}>🔍</div>

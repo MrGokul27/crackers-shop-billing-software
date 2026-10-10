@@ -377,7 +377,15 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(p => (
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="text-center py-4 text-muted">
+                        <i className="fa-solid fa-box-open fs-2 d-block mb-2 text-secondary opacity-50"></i>
+                        No cracker items found. Click <strong>"Add New Cracker"</strong> above to create your first item!
+                      </td>
+                    </tr>
+                  ) : (
+                    filtered.map(p => (
                     <tr key={p.id}>
                       <td>
                         <span className="me-2 fs-6">{p.emoji || '🎆'}</span>
@@ -456,7 +464,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                         </button>
                       </td>
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>

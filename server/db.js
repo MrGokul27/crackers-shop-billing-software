@@ -55,46 +55,69 @@ function writeJsonFile(filePath, data) {
   }
 }
 
-// ---------------- MONGODB CLOUD PERSISTENCE (FOR RENDER DEPLOYMENTS) ----------------
+// ---------------- MONGODB CLOUD PERSISTENCE (FOR RENDER DEPLOYMENTS & LOCAL) ----------------
 let mongoClient = null;
 let mongoDb = null;
 let isMongoConnected = false;
 
-const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
+const DEFAULT_MONGODB_URI = 'mongodb+srv://gokulanathjp:Gokulanathjp27@cluster0.f2gn1zp.mongodb.net/cracker_pos?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URI || DEFAULT_MONGODB_URI;
 
 export async function initMongo() {
   if (!MONGODB_URI) {
-    console.log('ℹ️ Local File Storage active. (Optional: Set MONGODB_URI in Render Environment Variables for permanent cloud database across all devices).');
+    console.log('ℹ️ Running in Local File Storage mode.');
     return false;
   }
   try {
     console.log('🔌 Connecting to MongoDB Atlas cloud database...');
     mongoClient = new MongoClient(MONGODB_URI);
     await mongoClient.connect();
-    mongoDb = mongoClient.db();
+    mongoDb = mongoClient.db('cracker_pos');
     isMongoConnected = true;
-    console.log('✅ Successfully connected to MongoDB Atlas! Cloud persistence active.');
+    console.log('✅ Successfully connected to MongoDB Atlas! Cloud persistence active for local & live Render.');
 
-    // Hydrate local cache from MongoDB on startup
+    // 1. Sync & Hydrate Products
     const remoteProducts = await mongoDb.collection('products').find({}).toArray();
     if (remoteProducts && remoteProducts.length > 0) {
       const cleanProds = remoteProducts.map(({ _id, ...rest }) => rest);
       writeJsonFile(PRODUCTS_FILE, cleanProds);
-      console.log(`📦 Restored ${cleanProds.length} products from cloud database.`);
+      console.log(`📦 Loaded ${cleanProds.length} products from MongoDB cloud.`);
+    } else {
+      const localProducts = readJsonFile(PRODUCTS_FILE, DEFAULT_PRODUCTS);
+      if (localProducts && localProducts.length > 0) {
+        await mongoDb.collection('products').insertMany(localProducts.map(p => ({ ...p })));
+        console.log(`📦 Uploaded ${localProducts.length} local products to MongoDB cloud.`);
+      }
     }
 
+    // 2. Sync & Hydrate Settings
     const remoteSettings = await mongoDb.collection('settings').findOne({ id: 'app_settings' });
     if (remoteSettings) {
       const { _id, id, ...cleanSettings } = remoteSettings;
       writeJsonFile(SETTINGS_FILE, cleanSettings);
-      console.log('⚙️ Restored shop settings from cloud database.');
+      console.log('⚙️ Loaded shop settings from MongoDB cloud.');
+    } else {
+      const localSettings = readJsonFile(SETTINGS_FILE, DEFAULT_SETTINGS);
+      await mongoDb.collection('settings').updateOne(
+        { id: 'app_settings' },
+        { $set: { id: 'app_settings', ...localSettings } },
+        { upsert: true }
+      );
+      console.log('⚙️ Uploaded shop settings to MongoDB cloud.');
     }
 
+    // 3. Sync & Hydrate Bills
     const remoteBills = await mongoDb.collection('bills').find({}).sort({ createdAt: -1 }).toArray();
     if (remoteBills && remoteBills.length > 0) {
       const cleanBills = remoteBills.map(({ _id, ...rest }) => rest);
       writeJsonFile(BILLS_FILE, cleanBills);
-      console.log(`🧾 Restored ${cleanBills.length} past bills from cloud database.`);
+      console.log(`🧾 Loaded ${cleanBills.length} past bills from MongoDB cloud.`);
+    } else {
+      const localBills = readJsonFile(BILLS_FILE, []);
+      if (localBills && localBills.length > 0) {
+        await mongoDb.collection('bills').insertMany(localBills.map(b => ({ ...b })));
+        console.log(`🧾 Uploaded ${localBills.length} local bills to MongoDB cloud.`);
+      }
     }
 
     return true;

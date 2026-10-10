@@ -30,7 +30,7 @@ const COMMON_BRANDS = [
   'Sri Kaliswari'
 ];
 
-const EMOJIS = ['✨', '🎇', '🎆', '🪴', '🏺', '⛲', '🌸', '🌀', '🎡', '💫', '🚀', '🌌', '🧨', '🧧', '💥', '⚡', '💣', '🌠', '🍿', '🐍', '💨', '🦚', '🎁', '👑', '🏷️', '📦'];
+const EMOJIS = ['✨', '🎇', '⭐', '🎆', '🪴', '🏺', '⛲', '🌸', '🌀', '🎡', '💫', '🚀', '🌌', '🧨', '🧧', '💥', '⚡', '💣', '🌠', '🍿', '🐍', '💨', '🦚', '🎁', '👑', '🏷️', '📦'];
 
 export default function ProductManagerModal({ products, onRefreshProducts, onClose }) {
   const [editingProduct, setEditingProduct] = useState(null);

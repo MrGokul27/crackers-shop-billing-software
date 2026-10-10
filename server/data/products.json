@@ -1,5 +1,57 @@
 [
   {
+    "id": "p_1791629532687",
+    "name": "Lakshmi Deluxe",
+    "category": "SINGLE SHOT CRACKERS",
+    "brand": "We Two",
+    "stock": 100,
+    "price": 56.8,
+    "mrp": 56.8,
+    "barcode": "7200009",
+    "emoji": "💥",
+    "unit": "PKT",
+    "inStock": true
+  },
+  {
+    "id": "p_1791629488700",
+    "name": "2\" Wetwo Crackers",
+    "category": "SINGLE SHOT CRACKERS",
+    "brand": "We Two",
+    "stock": 100,
+    "price": 13.44,
+    "mrp": 13.44,
+    "barcode": "5603869",
+    "emoji": "💥",
+    "unit": "PKT",
+    "inStock": true
+  },
+  {
+    "id": "p_1791629441438",
+    "name": "2½\" Wetwo Crackers",
+    "category": "SINGLE SHOT CRACKERS",
+    "brand": "We Two",
+    "stock": 100,
+    "price": 18.08,
+    "mrp": 18.08,
+    "barcode": "5305959",
+    "emoji": "💥",
+    "unit": "PKT",
+    "inStock": true
+  },
+  {
+    "id": "p_1791629256351",
+    "name": "3½\" Lakshmi /pyro king Crackers",
+    "category": "SINGLE SHOT CRACKERS",
+    "brand": "We Two",
+    "stock": 100,
+    "price": 28.4,
+    "mrp": 28.4,
+    "barcode": "8467754",
+    "emoji": "💥",
+    "unit": "PKT",
+    "inStock": true
+  },
+  {
     "id": "p_1791627304274",
     "name": "4\" Lakshmi /pyro king Crackers",
     "category": "SINGLE SHOT CRACKERS",

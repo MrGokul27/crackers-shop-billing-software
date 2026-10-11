@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { QRCodeSVG } from 'qrcode.react';
 
 export default function ThermalReceipt({ bill, settings }) {
@@ -15,7 +16,7 @@ export default function ThermalReceipt({ bill, settings }) {
     ? `upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=${encodeURIComponent(settings.shopName || 'Cracker Shop')}&am=${bill.grandTotal}&cu=INR&tn=Bill%20${encodeURIComponent(bill.billNo)}`
     : null;
 
-  return (
+  return createPortal(
     <div className="thermal-receipt-container">
       <div className={paperClass}>
         {/* Header */}
@@ -38,6 +39,9 @@ export default function ThermalReceipt({ bill, settings }) {
               Tel: {settings.phone}
             </div>
           )}
+          <div className="receipt-estimate-tag">
+            *** ESTIMATED BILL ***
+          </div>
         </div>
 
         <div className="receipt-divider"></div>
@@ -45,7 +49,7 @@ export default function ThermalReceipt({ bill, settings }) {
         {/* Bill Metadata */}
         <div style={{ fontSize: '10px', lineHeight: '1.3' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span><strong>Bill No:</strong> {bill.billNo}</span>
+            <span><strong>Est. Bill No:</strong> {bill.billNo}</span>
             <span>{formattedDate}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -142,11 +146,12 @@ export default function ThermalReceipt({ bill, settings }) {
           <div style={{ whiteSpace: 'pre-line', fontWeight: 'bold', fontSize: '10px' }}>
             {settings?.footerNote || '✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nThank You! Visit Again!'}
           </div>
-          <div style={{ fontSize: '8px', color: '#555', marginTop: '3px' }}>
-            *** Computer Generated Invoice ***
+          <div style={{ fontSize: '8px', color: '#111', marginTop: '3px', fontWeight: 'bold' }}>
+            *** Computer Generated Estimated Bill ***
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

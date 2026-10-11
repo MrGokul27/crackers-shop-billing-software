@@ -19,7 +19,7 @@ export default function ReceiptPreviewModal({ bill, settings, onClose, onPrint }
         <div className="modal-content shadow-lg border-0">
           <div className="modal-header bg-dark text-white py-2 px-3">
             <h6 className="modal-title fw-bold">
-              <i className="fa-solid fa-receipt text-warning me-2"></i> Bill #{bill.billNo}
+              <i className="fa-solid fa-receipt text-warning me-2"></i> Estimated Bill #{bill.billNo}
             </h6>
             <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
           </div>
@@ -32,12 +32,15 @@ export default function ReceiptPreviewModal({ bill, settings, onClose, onPrint }
                 <small className="text-muted d-block">{settings?.tagline}</small>
                 <small className="text-muted d-block">{settings?.address}</small>
                 <small className="fw-bold d-block">Ph: {settings?.phone}</small>
+                <div className="fw-bold text-dark mt-1" style={{ letterSpacing: '1px', fontSize: '0.85rem' }}>
+                  *** ESTIMATED BILL ***
+                </div>
               </div>
 
               <hr className="border-secondary my-2 border-dashed" />
 
               <div className="d-flex justify-content-between small">
-                <span><strong>Bill:</strong> {bill.billNo}</span>
+                <span><strong>Est. Bill No:</strong> {bill.billNo}</span>
                 <span>{formattedDate}</span>
               </div>
               <div className="d-flex justify-content-between small">
@@ -119,7 +122,7 @@ export default function ReceiptPreviewModal({ bill, settings, onClose, onPrint }
 
               <div className="text-center text-muted small mt-2">
                 <p className="mb-0 fw-bold" style={{ whiteSpace: 'pre-line' }}>{settings?.footerNote}</p>
-                <small className="text-secondary">*** Computer Generated Invoice ***</small>
+                <small className="text-dark fw-bold">*** Computer Generated Estimated Bill ***</small>
               </div>
             </div>
           </div>
@@ -129,7 +132,7 @@ export default function ReceiptPreviewModal({ bill, settings, onClose, onPrint }
               Close
             </button>
             <button type="button" className="btn btn-success fw-bold px-4 shadow-sm" onClick={onPrint}>
-              <i className="fa-solid fa-print me-2"></i> Print to Thermal Machine
+              <i className="fa-solid fa-print me-2"></i> Print Estimated Bill
             </button>
           </div>
         </div>

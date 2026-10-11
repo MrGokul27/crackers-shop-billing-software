@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { sound } from './utils/audio';
 import { useBarcodeScanner } from './utils/useBarcodeScanner';
+import { triggerPrintReceipt, applyReceiptPrintStyles, removeReceiptPrintStyles } from './utils/printReceipt';
 
 import Navbar from './components/Navbar';
 import CategoryFilter from './components/CategoryFilter';
@@ -394,6 +395,27 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Listen for native beforeprint / afterprint (e.g. keyboard Ctrl+P)
+  useEffect(() => {
+    const handleBeforePrint = () => {
+      if (!document.body.classList.contains('printing-barcodes')) {
+        applyReceiptPrintStyles(settings?.printerType);
+      }
+    };
+    const handleAfterPrint = () => {
+      if (!document.body.classList.contains('printing-barcodes')) {
+        removeReceiptPrintStyles();
+      }
+    };
+
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, [settings?.printerType]);
+
   // Checkout and Direct Thermal Print
   const handleCheckoutAndPrint = async (billPayload) => {
     setIsProcessing(true);
@@ -426,17 +448,11 @@ export default function App() {
         // If on mobile, return to products tab
         setMobileTab('products');
 
-        // Trigger Instant Browser / Thermal Printer Dialog
-        document.body.classList.remove('printing-barcodes');
-        document.body.classList.add('printing-receipt');
-        setTimeout(() => {
-          window.print();
-          setTimeout(() => {
-            document.body.classList.remove('printing-receipt');
-          }, 500);
+        // Trigger Instant Browser / Thermal Printer Dialog with exact bill size and 0 extra pages
+        triggerPrintReceipt(settings?.printerType, () => {
           setIsProcessing(false);
           searchInputRef.current?.focus();
-        }, 300);
+        });
       } else {
         alert(json.message || 'Error saving bill');
         setIsProcessing(false);
@@ -457,14 +473,7 @@ export default function App() {
 
   const handleTriggerPrintFromPreview = () => {
     setShowPreviewModal(false);
-    document.body.classList.remove('printing-barcodes');
-    document.body.classList.add('printing-receipt');
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => {
-        document.body.classList.remove('printing-receipt');
-      }, 500);
-    }, 200);
+    triggerPrintReceipt(settings?.printerType);
   };
 
   // Filtered Products for Display (strictly ordered by Category Order)
@@ -513,6 +522,21 @@ export default function App() {
       items: otherItems
     });
   }
+
+  // Create active draft bill fallback for instant preview or Ctrl+P while adding products
+  const currentDraftBill = cart.length > 0 ? {
+    billNo: 'DRAFT',
+    items: cart,
+    subtotal: cart.reduce((s, i) => s + (i.price * i.qty), 0),
+    discount: parseFloat(discount) || 0,
+    grandTotal: Math.max(0, Math.round(cart.reduce((s, i) => s + (i.price * i.qty), 0) - (parseFloat(discount) || 0))),
+    paymentMethod,
+    amountReceived: 0,
+    changeToReturn: 0,
+    customerPhone: customerPhone ? customerPhone.trim() : '',
+    cashier: cashier || 'Owner/Admin',
+    createdAt: new Date().toISOString()
+  } : null;
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
@@ -733,7 +757,7 @@ export default function App() {
 
       {/* Hidden Component Rendered ONLY for Thermal Bill Machine Print (@media print) */}
       <ThermalReceipt
-        bill={activeBillForPrint}
+        bill={activeBillForPrint || currentDraftBill}
         settings={settings}
       />
 

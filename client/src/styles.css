@@ -489,98 +489,200 @@ body {
     visibility: hidden;
   }
 
+  html,
   body {
     background: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* 1. THERMAL RECEIPT PRINTING */
+  body.printing-receipt {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Completely remove React root app, backdrop, modals, and barcode sheets from receipt print flow */
+  body.printing-receipt #root,
+  body.printing-receipt .modal,
+  body.printing-receipt .modal-backdrop,
+  body.printing-receipt .printable-barcode-sheet {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Printable receipt container flows naturally at exact content height with NO extra blank pages */
+  body.printing-receipt .thermal-receipt-container {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   body.printing-receipt .thermal-receipt-container,
   body.printing-receipt .thermal-receipt-container * {
     visibility: visible !important;
   }
 
-  body.printing-receipt .thermal-receipt-container {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background: #ffffff;
-    color: #000000;
-  }
-
+  /* Receipt fills the exact bill page width with no clipping */
   .receipt-paper {
-    width: 78mm;
-    margin: 0 auto;
-    padding: 2mm 3mm;
+    width: 100% !important;
+    max-width: 80mm !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+    padding: 2mm 3mm 4mm 3mm !important;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    line-height: 1.25;
+    font-size: 11.5px;
+    line-height: 1.3;
     color: #000000;
+    background: #ffffff !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
   }
 
   .receipt-paper.receipt-58mm {
-    width: 54mm;
+    width: 100% !important;
+    max-width: 58mm !important;
+    padding: 1.5mm 2mm 3mm 2mm !important;
     font-size: 10px;
-    padding: 1mm 1.5mm;
+    line-height: 1.25;
   }
 
   .receipt-header {
     text-align: center;
     margin-bottom: 5px;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .receipt-shop-name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 900;
     text-transform: uppercase;
     margin-bottom: 2px;
+    letter-spacing: 0.5px;
+    word-break: break-word;
+  }
+
+  .receipt-58mm .receipt-shop-name {
+    font-size: 13px;
+  }
+
+  .receipt-estimate-tag {
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    padding: 1px 0;
+    text-align: center;
+    color: #000000;
+  }
+
+  .receipt-58mm .receipt-estimate-tag {
+    font-size: 11px;
   }
 
   .receipt-divider {
+    border: none;
     border-top: 1px dashed #000000;
     margin: 4px 0;
   }
 
   .receipt-double-divider {
+    border: none;
     border-top: 2px solid #000000;
     margin: 5px 0;
   }
 
   .receipt-table {
-    width: 100%;
+    width: 100% !important;
     border-collapse: collapse;
     margin: 4px 0;
+    table-layout: fixed;
   }
 
   .receipt-table th {
     text-align: left;
     border-bottom: 1px dashed #000000;
-    padding-bottom: 2px;
-    font-size: 10px;
+    padding: 2px 0;
+    font-size: 10.5px;
+    font-weight: bold;
+    color: #000000;
   }
 
   .receipt-table td {
-    padding: 2px 0;
+    padding: 2.5px 0;
     font-size: 11px;
+    color: #000000;
+    vertical-align: top;
+  }
+
+  .receipt-table tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .receipt-58mm .receipt-table th {
+    font-size: 9px;
+  }
+
+  .receipt-58mm .receipt-table td {
+    font-size: 9.5px;
   }
 
   .text-right { text-align: right; }
   .text-center { text-align: center; }
   .font-bold { font-weight: bold; }
+
   .receipt-grand-total {
-    font-size: 14px;
+    font-size: 14.5px;
     font-weight: 900;
+    letter-spacing: 0.5px;
+  }
+
+  .receipt-58mm .receipt-grand-total {
+    font-size: 13px;
   }
 
   .receipt-footer {
     text-align: center;
-    margin-top: 8px;
+    margin-top: 6px;
     font-size: 10px;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .receipt-paper > *:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   /* 2. BARCODE STICKER / COUNTER SHEET PRINTING */
@@ -756,6 +858,6 @@ body {
 
   @page {
     margin: 0;
-    size: auto;
+    size: 80mm auto;
   }
 }

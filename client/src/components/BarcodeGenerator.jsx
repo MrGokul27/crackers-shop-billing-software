@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
 
 /**
@@ -12,11 +12,12 @@ export default function BarcodeGenerator({
   fontSize = 14,
   displayValue = true,
   format = 'CODE128',
+  margin = 12,
   className = ''
 }) {
   const svgRef = useRef(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (svgRef.current && value) {
       try {
         JsBarcode(svgRef.current, String(value).trim(), {
@@ -25,17 +26,17 @@ export default function BarcodeGenerator({
           height,
           displayValue,
           fontSize,
-          margin: 12, // Essential Quiet Zone for physical barcode guns
+          margin, // Configurable Quiet Zone for physical barcode guns
           background: '#ffffff',
           lineColor: '#000000',
           fontOptions: 'bold',
-          textMargin: 4
+          textMargin: 3
         });
       } catch (err) {
         console.error('Barcode rendering error:', err);
       }
     }
-  }, [value, width, height, fontSize, displayValue, format]);
+  }, [value, width, height, fontSize, displayValue, format, margin]);
 
   return <svg ref={svgRef} className={className}></svg>;
 }

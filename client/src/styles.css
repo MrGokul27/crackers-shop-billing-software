@@ -584,42 +584,174 @@ body {
   }
 
   /* 2. BARCODE STICKER / COUNTER SHEET PRINTING */
+  body.printing-barcodes {
+    background: #ffffff !important;
+    overflow: visible !important;
+    height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Completely remove React root app, backdrop, and thermal receipt from print flow */
+  body.printing-barcodes #root,
+  body.printing-barcodes .modal,
+  body.printing-barcodes .modal-backdrop,
+  body.printing-barcodes .thermal-receipt-container {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Printable barcode container (rendered via React portal into document.body) flows naturally across pages */
+  body.printing-barcodes .printable-barcode-sheet {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   body.printing-barcodes .printable-barcode-sheet,
   body.printing-barcodes .printable-barcode-sheet * {
     visibility: visible !important;
   }
 
-  body.printing-barcodes .printable-barcode-sheet {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    padding: 10mm;
-    background: #ffffff;
+  .barcode-print-header {
+    text-align: center !important;
+    margin-bottom: 3.5mm !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
   }
 
-  .barcode-print-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8mm;
+  .barcode-print-shop-name {
+    margin: 0 !important;
+    text-transform: uppercase !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+    letter-spacing: 0.5px !important;
   }
 
+  .barcode-print-sub {
+    margin: 2px 0 3px 0 !important;
+    font-size: 10.5px !important;
+    color: #444444 !important;
+  }
+
+  .barcode-print-hr {
+    margin: 0 0 3.5mm 0 !important;
+    border: none !important;
+    border-top: 1.5px solid #000000 !important;
+  }
+
+  .barcode-print-sheet-content {
+    width: 100% !important;
+  }
+
+  /* Atomic row of exactly 4 stickers: moves cleanly to next page if insufficient space */
+  .barcode-print-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    gap: 3mm !important;
+    width: 100% !important;
+    margin-bottom: 3.5mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Each sticker is exactly 1/4th width of the row */
   .barcode-print-sticker {
-    border: 1px solid #000;
-    border-radius: 4px;
-    padding: 4mm;
-    text-align: center;
-    page-break-inside: avoid;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: calc((100% - 9mm) / 4) !important;
+    max-width: calc((100% - 9mm) / 4) !important;
+    flex: 0 0 calc((100% - 9mm) / 4) !important;
+    box-sizing: border-box !important;
+    border: 1px dashed #444444 !important;
+    border-radius: 4px !important;
+    padding: 2mm 1.5mm !important;
+    text-align: center !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #ffffff !important;
+    min-height: 33mm !important;
+  }
+
+  .barcode-print-sticker .sticker-shop-name {
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    color: #111111 !important;
+    margin-bottom: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    line-height: 1.2 !important;
+  }
+
+  .barcode-print-sticker .sticker-product-name {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    color: #000000 !important;
+    margin-bottom: 1.5px !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    max-height: 25px !important;
+    word-break: break-word !important;
+  }
+
+  .barcode-print-sticker .sticker-barcode-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 1px 0 !important;
   }
 
   .barcode-print-sticker svg {
-    max-width: 100%;
-    height: auto;
+    max-width: 100% !important;
+    height: 44px !important;
+    display: block !important;
+    margin: 0 auto !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .barcode-print-sticker svg * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .barcode-print-sticker .sticker-price-line {
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+    margin-top: 1px !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+  }
+
+  .barcode-print-sticker .mrp-val {
+    font-size: 9px !important;
+    font-weight: normal !important;
+    color: #555555 !important;
+    text-decoration: line-through !important;
+    margin-left: 3px !important;
   }
 
   @page {

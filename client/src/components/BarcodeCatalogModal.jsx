@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import BarcodeGenerator, { downloadProductSticker, downloadBarcodeImage } from './BarcodeGenerator';
 
 const CATEGORY_ORDER = [
@@ -24,7 +25,28 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const uniqueCats = [...new Set(products.map(p => p.category))];
+  // Guarantee strictly unique products: no duplicate barcodes, no duplicate IDs
+  const uniqueProducts = React.useMemo(() => {
+    const seenBarcodes = new Set();
+    const seenIds = new Set();
+    const list = [];
+    for (const p of products || []) {
+      if (!p) continue;
+      const barcodeKey = p.barcode ? String(p.barcode).trim() : null;
+      const idKey = p.id ? String(p.id) : null;
+
+      // Avoid duplicates
+      if (barcodeKey && seenBarcodes.has(barcodeKey)) continue;
+      if (idKey && seenIds.has(idKey)) continue;
+
+      if (barcodeKey) seenBarcodes.add(barcodeKey);
+      if (idKey) seenIds.add(idKey);
+      list.push(p);
+    }
+    return list;
+  }, [products]);
+
+  const uniqueCats = [...new Set(uniqueProducts.map(p => p.category).filter(Boolean))];
   uniqueCats.sort((a, b) => {
     const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (a || '').toLowerCase());
     const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (b || '').toLowerCase());
@@ -35,38 +57,87 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
   });
   const categories = ['All', ...uniqueCats];
 
-  const filtered = products.filter(p => {
-    const matchesCat = selectedCategory === 'All' || p.category.toLowerCase() === selectedCategory.toLowerCase();
-    if (!matchesCat) return false;
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase();
-    return (
-      p.name.toLowerCase().includes(q) || 
-      (p.barcode && p.barcode.includes(q)) ||
-      (p.brand && p.brand.toLowerCase().includes(q))
-    );
-  }).sort((a, b) => {
-    const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (a.category || '').toLowerCase());
-    const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (b.category || '').toLowerCase());
-    const orderA = idxA === -1 ? 999 : idxA;
-    const orderB = idxB === -1 ? 999 : idxB;
-    if (orderA !== orderB) return orderA - orderB;
-    return (a.name || '').localeCompare(b.name || '');
-  });
+  const filtered = React.useMemo(() => {
+    return uniqueProducts.filter(p => {
+      const matchesCat = selectedCategory === 'All' || (p.category || '').toLowerCase() === selectedCategory.toLowerCase();
+      if (!matchesCat) return false;
+      if (!searchTerm) return true;
+      const q = searchTerm.toLowerCase();
+      return (
+        (p.name && p.name.toLowerCase().includes(q)) || 
+        (p.barcode && String(p.barcode).includes(q)) ||
+        (p.brand && p.brand.toLowerCase().includes(q))
+      );
+    }).sort((a, b) => {
+      const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (a.category || '').toLowerCase());
+      const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === (b.category || '').toLowerCase());
+      const orderA = idxA === -1 ? 999 : idxA;
+      const orderB = idxB === -1 ? 999 : idxB;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.name || '').localeCompare(b.name || '');
+    });
+  }, [uniqueProducts, selectedCategory, searchTerm]);
 
-  const handlePrintBarcodes = () => {
+  // Group stickers into atomic rows of exactly 4 for clean page-break avoidance
+  const printRows = React.useMemo(() => {
+    const rows = [];
+    for (let i = 0; i < filtered.length; i += 4) {
+      rows.push(filtered.slice(i, i + 4));
+    }
+    return rows;
+  }, [filtered]);
+
+  // Clean print state setup
+  const applyPrintStyles = () => {
     document.body.classList.remove('printing-receipt');
     document.body.classList.add('printing-barcodes');
+
+    let printStyle = document.getElementById('barcode-print-page-style');
+    if (!printStyle) {
+      printStyle = document.createElement('style');
+      printStyle.id = 'barcode-print-page-style';
+      document.head.appendChild(printStyle);
+    }
+    printStyle.innerHTML = `
+      @page {
+        size: A4 portrait;
+        margin: 8mm 6mm;
+      }
+    `;
+  };
+
+  const removePrintStyles = () => {
+    document.body.classList.remove('printing-barcodes');
+    const s = document.getElementById('barcode-print-page-style');
+    if (s) s.remove();
+  };
+
+  useEffect(() => {
+    const handleBeforePrint = () => applyPrintStyles();
+    const handleAfterPrint = () => removePrintStyles();
+
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
+      removePrintStyles();
+    };
+  }, []);
+
+  const handlePrintBarcodes = () => {
+    applyPrintStyles();
+
     setTimeout(() => {
       window.print();
-      setTimeout(() => {
-        document.body.classList.remove('printing-barcodes');
-      }, 500);
-    }, 150);
+      setTimeout(removePrintStyles, 1000);
+    }, 250);
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
+    <>
+      <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
       <div className="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div className="modal-content shadow-lg border-0">
           {/* Header */}
@@ -102,7 +173,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                   onClick={handlePrintBarcodes}
                 >
                   <i className="fa-solid fa-print text-warning"></i>
-                  <span>Print All Stickers Sheet</span>
+                  <span>Print Stickers Sheet ({filtered.length} Items • 4/Row)</span>
                 </button>
               </div>
             </div>
@@ -245,7 +316,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
 
           <div className="modal-footer bg-light p-2 d-flex justify-content-between">
             <span className="text-muted small">
-              Showing <strong>{filtered.length}</strong> cracker items
+              Showing <strong>{filtered.length}</strong> unique cracker items
             </span>
             <div className="d-flex gap-2">
               <button
@@ -253,7 +324,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                 className="btn btn-outline-primary btn-sm fw-bold px-3"
                 onClick={handlePrintBarcodes}
               >
-                <i className="fa-solid fa-print me-1"></i> Print All Stickers / Sheet
+                <i className="fa-solid fa-print me-1"></i> Print Stickers Sheet ({filtered.length} Items • 4/Row)
               </button>
               <button type="button" className="btn btn-secondary btn-sm px-4" onClick={onClose}>
                 Close
@@ -262,38 +333,54 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
           </div>
         </div>
       </div>
-
-      {/* Hidden container formatted specifically for printing A4 / Sticker sheets */}
-      <div className="printable-barcode-sheet">
-        <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-          <h2 style={{ margin: 0, textTransform: 'uppercase' }}>{settings?.shopName || 'SRI KRISHNA CRACKERS'}</h2>
-          <p style={{ margin: '3px 0', fontSize: '13px' }}>Master Product Barcode Stickers</p>
-          <hr style={{ borderTop: '2px solid #000' }} />
-        </div>
-
-        <div className="barcode-print-grid">
-          {filtered.map(p => (
-            <div className="barcode-print-sticker" key={p.id}>
-              <div style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '2px' }}>
-                {settings?.shopName || 'CRACKER STORE'}
-              </div>
-              <div style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '3px' }}>
-                {p.name}
-              </div>
-              <BarcodeGenerator
-                value={p.barcode || '8901001'}
-                width={2.2}
-                height={60}
-                fontSize={15}
-                displayValue={true}
-              />
-              <div style={{ fontSize: '14px', fontWeight: '900', marginTop: '4px' }}>
-                PRICE: ₹{p.price} {p.mrp > p.price && <span style={{ fontSize: '11px', textDecoration: 'line-through', color: '#555' }}>(MRP ₹{p.mrp})</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
+
+      {/* Render print sheet directly to document.body for clean pagination outside React root flow */}
+      {createPortal(
+        <div className="printable-barcode-sheet">
+          <div className="barcode-print-header">
+            <h2 className="barcode-print-shop-name">{settings?.shopName || 'SRI KRISHNA CRACKERS'}</h2>
+            <p className="barcode-print-sub">
+              Master Product Barcode Stickers • {filtered.length} Items ({printRows.length} Rows of 4)
+            </p>
+            <hr className="barcode-print-hr" />
+          </div>
+
+          <div className="barcode-print-sheet-content">
+            {printRows.map((row, rIdx) => (
+              <div className="barcode-print-row" key={`prow-${rIdx}`}>
+                {row.map(p => (
+                  <div className="barcode-print-sticker" key={p.id || p.barcode}>
+                    <div className="sticker-shop-name">
+                      {settings?.shopName || 'CRACKER STORE'}
+                    </div>
+                    <div className="sticker-product-name" title={p.name}>
+                      {p.name}
+                    </div>
+                    <div className="sticker-barcode-wrapper">
+                      <BarcodeGenerator
+                        value={p.barcode || '8901001'}
+                        width={1.25}
+                        height={32}
+                        fontSize={11}
+                        margin={4}
+                        displayValue={true}
+                      />
+                    </div>
+                    <div className="sticker-price-line">
+                      <span className="fw-bold">PRICE: ₹{p.price}</span>
+                      {p.mrp && Number(p.mrp) > Number(p.price) && (
+                        <span className="mrp-val">(MRP ₹{p.mrp})</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

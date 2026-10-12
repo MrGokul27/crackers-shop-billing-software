@@ -243,9 +243,16 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                           </span>
                         )}
                       </div>
-                      <span className="fw-bold text-success font-monospace" style={{ fontSize: '0.95rem' }}>
-                        ₹{p.price}
-                      </span>
+                      <div className="text-end">
+                        <span className="fw-bold text-success font-monospace" style={{ fontSize: '0.95rem' }}>
+                          ₹{p.price}
+                        </span>
+                        <div className="text-muted small" style={{ fontSize: '0.68rem', lineHeight: '1.1' }}>
+                          {(p.priceQty && p.priceQty > 1) 
+                            ? `${p.priceQty} ${p.unit || 'Box'}s this amount` 
+                            : `1 ${p.unit || 'Box'} this amount`}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="fw-bold text-dark text-truncate small mb-1" title={p.name}>
@@ -275,6 +282,8 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                           barcode: p.barcode || '8901001',
                           name: p.name,
                           price: p.price,
+                          priceQty: p.priceQty || 1,
+                          unit: p.unit || 'Box',
                           mrp: p.mrp,
                           shopName: settings?.shopName || 'SRI KRISHNA CRACKERS',
                           category: p.category
@@ -372,6 +381,11 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                       {p.mrp && Number(p.mrp) > Number(p.price) && (
                         <span className="mrp-val">(MRP ₹{p.mrp})</span>
                       )}
+                    </div>
+                    <div className="sticker-qty-note">
+                      {(p.priceQty && p.priceQty > 1) 
+                        ? `${p.priceQty} ${p.unit || 'Box'}s this amount` 
+                        : `1 ${p.unit || 'Box'} this amount`}
                     </div>
                   </div>
                 ))}

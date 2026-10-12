@@ -65,7 +65,14 @@ export default function ReceiptPreviewModal({ bill, settings, onClose, onPrint }
                 <tbody>
                   {bill.items?.map((item, idx) => (
                     <tr key={idx} className="border-bottom border-light">
-                      <td className="py-1 text-start">{item.name}</td>
+                      <td className="py-1 text-start">
+                        <div>{item.name}</div>
+                        {item.priceQty && item.priceQty > 1 && (
+                          <span className="text-muted font-monospace" style={{ fontSize: '0.72rem' }}>
+                            ({item.priceQty} {item.unit || 'Box'}s this amount)
+                          </span>
+                        )}
+                      </td>
                       <td className="py-1 text-center">{item.qty}</td>
                       <td className="py-1 text-end">₹{item.price}</td>
                       <td className="py-1 text-end font-monospace">₹{item.total || item.price * item.qty}</td>

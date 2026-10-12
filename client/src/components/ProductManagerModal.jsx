@@ -43,6 +43,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     brand: 'Standard Fireworks',
     stock: 50,
     price: '',
+    priceQty: 1,
     mrp: '',
     barcode: '',
     emoji: '✨',
@@ -59,6 +60,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       brand: 'Standard Fireworks',
       stock: 50,
       price: '',
+      priceQty: 1,
       mrp: '',
       barcode: String(Math.floor(1000000 + Math.random() * 9000000)),
       emoji: '✨',
@@ -76,6 +78,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       brand: p.brand || 'Standard Fireworks',
       stock: p.stock !== undefined ? p.stock : 50,
       price: p.price,
+      priceQty: p.priceQty || 1,
       mrp: p.mrp || p.price,
       barcode: p.barcode || '',
       emoji: p.emoji || '✨',
@@ -98,12 +101,17 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       return;
     }
 
+    const payload = {
+      ...formData,
+      priceQty: Math.max(1, parseInt(formData.priceQty, 10) || 1)
+    };
+
     try {
       if (isCreating) {
         const res = await fetch('/api/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(payload)
         });
         if (res.ok) {
           setIsCreating(false);
@@ -113,7 +121,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
         const res = await fetch(`/api/products/${editingProduct.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(payload)
         });
         if (res.ok) {
           setEditingProduct(null);
@@ -298,6 +306,43 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                     />
                   </div>
 
+                  {/* Quantity For This Price (How many boxes/units this amount is for) */}
+                  <div className="col-md-3">
+                    <label className="form-label small fw-bold mb-1 text-primary">
+                      <i className="fa-solid fa-boxes-packing me-1"></i> Qty for this Amount *
+                    </label>
+                    <div className="input-group input-group-sm">
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        className="form-control form-control-sm font-monospace fw-bold text-primary"
+                        placeholder="1"
+                        value={formData.priceQty !== undefined ? formData.priceQty : 1}
+                        onChange={(e) => setFormData({ ...formData, priceQty: Math.max(1, parseInt(e.target.value, 10) || 1) })}
+                        required
+                      />
+                      <span className="input-group-text small bg-white text-muted px-2 font-monospace">
+                        {formData.unit || 'Box'}{(formData.priceQty > 1 ? 's' : '')}
+                      </span>
+                    </div>
+                    <div className="form-text mt-0 text-muted" style={{ fontSize: '0.68rem' }}>
+                      How many {formData.unit || 'box'}(es) for this ₹ price (e.g. 1 or 2)
+                    </div>
+                  </div>
+
+                  {/* Unit */}
+                  <div className="col-md-2">
+                    <label className="form-label small fw-bold mb-1">Unit</label>
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Box / Pkt / Pce"
+                      value={formData.unit}
+                      onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                    />
+                  </div>
+
                   {/* MRP */}
                   <div className="col-md-2">
                     <label className="form-label small fw-bold mb-1">MRP Price (₹)</label>
@@ -326,19 +371,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                     />
                   </div>
 
-                  {/* Unit */}
-                  <div className="col-md-2">
-                    <label className="form-label small fw-bold mb-1">Unit</label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Box / Pkt / Pce"
-                      value={formData.unit}
-                      onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                    />
-                  </div>
-
-                  {/* Emoji Icon */}
+                  {/* Icon / Emoji */}
                   <div className="col-md-3">
                     <label className="form-label small fw-bold mb-1">Icon / Emoji</label>
                     <select
@@ -351,6 +384,26 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                       ))}
                     </select>
                   </div>
+
+                  {/* Live Deal Preview Badge */}
+                  {formData.price && (
+                    <div className="col-12 mt-1">
+                      <div className="alert alert-info py-1 px-3 mb-1 d-flex align-items-center justify-content-between flex-wrap gap-2 small">
+                        <span>
+                          <i className="fa-solid fa-tag text-primary me-1"></i>
+                          <strong>Deal Preview: </strong>
+                          <span className="badge bg-primary text-white font-monospace fs-6 px-2 py-1 ms-1 shadow-sm">
+                            {formData.priceQty || 1} {formData.unit || 'Box'}{(formData.priceQty > 1 ? 's' : '')} for ₹{formData.price}
+                          </span>
+                        </span>
+                        <span className="text-secondary fw-semibold">
+                          {(formData.priceQty && formData.priceQty > 1) 
+                            ? `Sold as ${formData.priceQty} ${formData.unit || 'Box'}s this amount (₹${formData.price})` 
+                            : `Sold as 1 ${formData.unit || 'Box'} this amount (₹${formData.price})`}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Barcode with Auto-Generate */}
                   <div className="col-12 col-md-6">
@@ -516,8 +569,29 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                           </span>
                         )}
                       </td>
-                      <td className="fw-bold text-success font-monospace fs-6">
-                        ₹{p.price}
+                      <td className="align-middle">
+                        <div className="d-flex align-items-baseline gap-1">
+                          <span className="fw-bold text-success font-monospace fs-6">
+                            ₹{p.price}
+                          </span>
+                          {p.mrp && Number(p.mrp) > Number(p.price) && (
+                            <span className="text-muted small text-decoration-line-through font-monospace" style={{ fontSize: '0.72rem' }}>
+                              ₹{p.mrp}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1">
+                          <span className={`badge rounded-pill px-2 py-1 fw-bold ${
+                            (p.priceQty && p.priceQty > 1)
+                              ? 'bg-primary text-white shadow-sm'
+                              : 'bg-light text-secondary border'
+                          }`} style={{ fontSize: '0.74rem' }}>
+                            <i className="fa-solid fa-box-open me-1"></i>
+                            {(p.priceQty && p.priceQty > 1)
+                              ? `${p.priceQty} ${p.unit || 'Box'}s this amount`
+                              : `1 ${p.unit || 'Box'} this amount`}
+                          </span>
+                        </div>
                       </td>
                       <td className="font-monospace text-primary fw-bold small">
                         #{p.barcode || '-'}
@@ -533,6 +607,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                                 barcode: p.barcode,
                                 name: p.name,
                                 price: p.price,
+                                priceQty: p.priceQty || 1,
+                                unit: p.unit || 'Box',
                                 mrp: p.mrp
                               })}
                             >

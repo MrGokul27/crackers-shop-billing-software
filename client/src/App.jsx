@@ -276,6 +276,7 @@ export default function App() {
         id: product.id,
         name: product.name,
         price: product.price,
+        priceQty: product.priceQty || 1,
         mrp: product.mrp,
         emoji: product.emoji,
         unit: product.unit,
@@ -311,9 +312,12 @@ export default function App() {
 
     if (product) {
       handleAddToCart(product);
+      const qtySuffix = (product.priceQty && product.priceQty > 1) 
+        ? ` (${product.priceQty} ${product.unit || 'Box'}s this amount)` 
+        : '';
       setScanNotification({
         type: 'success',
-        message: `✨ Scanned: ${product.emoji || '🎆'} ${product.name} (₹${product.price}) added to Bill!`,
+        message: `✨ Scanned: ${product.emoji || '🎆'} ${product.name} (₹${product.price}${qtySuffix}) added to Bill!`,
         product
       });
       setSearchQuery('');

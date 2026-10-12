@@ -49,6 +49,8 @@ export function downloadProductSticker({
   barcode,
   name,
   price,
+  priceQty = 1,
+  unit = 'Box',
   mrp,
   shopName = 'SRI KRISHNA CRACKERS',
   category = 'Crackers'
@@ -116,20 +118,30 @@ export function downloadProductSticker({
 
     // 4. Price & MRP Banner at bottom
     ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(14, 255, canvas.width - 28, 65);
+    ctx.fillRect(14, 250, canvas.width - 28, 74);
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
-    ctx.strokeRect(14, 255, canvas.width - 28, 65);
+    ctx.strokeRect(14, 250, canvas.width - 28, 74);
+
+    const pQty = parseInt(priceQty, 10) || 1;
+    const uLabel = unit || 'Box';
+    const unitSuffix = pQty > 1 ? (uLabel.toLowerCase().endsWith('s') ? uLabel : `${uLabel}s`) : uLabel;
 
     ctx.fillStyle = '#000000';
-    ctx.font = 'bold 24px "Plus Jakarta Sans", Arial, sans-serif';
+    ctx.font = 'bold 22px "Plus Jakarta Sans", Arial, sans-serif';
     ctx.textAlign = 'center';
 
     let priceText = `PRICE: ₹${price}`;
     if (mrp && mrp > price) {
       priceText += `  (MRP: ₹${mrp})`;
     }
-    ctx.fillText(priceText, canvas.width / 2, 298);
+    ctx.fillText(priceText, canvas.width / 2, 280);
+
+    // Explicit "1 Box this amount" or "2 Boxes this amount" sub-banner
+    ctx.fillStyle = '#1e1b4b';
+    ctx.font = 'bold 16px "Plus Jakarta Sans", Arial, sans-serif';
+    const qtyNoteText = pQty > 1 ? `${pQty} ${unitSuffix} this amount` : `1 ${uLabel} this amount`;
+    ctx.fillText(`(${qtyNoteText})`, canvas.width / 2, 307);
 
     // Trigger Download
     const imgURL = canvas.toDataURL('image/png', 1.0);

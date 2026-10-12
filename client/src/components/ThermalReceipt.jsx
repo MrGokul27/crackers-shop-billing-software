@@ -78,6 +78,7 @@ export default function ThermalReceipt({ bill, settings }) {
               <tr key={idx}>
                 <td style={{ wordBreak: 'break-word', paddingRight: '2px' }}>
                   {item.name}
+                  {item.priceQty && item.priceQty > 1 ? ` (${item.priceQty} ${item.unit || 'Box'}s)` : ''}
                 </td>
                 <td style={{ textAlign: 'center' }}>{item.qty}</td>
                 <td style={{ textAlign: 'right' }}>{item.price}</td>

@@ -137,13 +137,14 @@ app.get('/api/products/barcode/:barcode', async (req, res) => {
 // POST add new product
 app.post('/api/products', async (req, res) => {
   try {
-    const { name, category, price, mrp, barcode, emoji, unit, inStock, brand, stock } = req.body;
+    const { name, category, price, mrp, barcode, emoji, unit, inStock, brand, stock, priceQty } = req.body;
     if (!name || !price) {
       return res.status(400).json({ success: false, message: 'Name and price are required' });
     }
 
     const products = await db.getProducts();
     const stockQty = stock !== undefined && stock !== '' ? parseInt(stock, 10) : 50;
+    const parsedPriceQty = priceQty !== undefined && priceQty !== '' ? Math.max(1, parseInt(priceQty, 10) || 1) : 1;
     const newProduct = {
       id: 'p_' + Date.now(),
       name: name.trim(),
@@ -151,6 +152,7 @@ app.post('/api/products', async (req, res) => {
       brand: brand ? brand.trim() : 'Standard Fireworks',
       stock: isNaN(stockQty) ? 50 : stockQty,
       price: parseFloat(price) || 0,
+      priceQty: parsedPriceQty,
       mrp: parseFloat(mrp) || parseFloat(price) || 0,
       barcode: barcode ? barcode.trim() : String(Math.floor(1000000 + Math.random() * 9000000)),
       emoji: emoji || '🎆',
@@ -189,11 +191,16 @@ app.put('/api/products/:id', async (req, res) => {
       ? parseInt(req.body.stock, 10) 
       : products[index].stock;
 
+    const parsedPriceQty = req.body.priceQty !== undefined && req.body.priceQty !== ''
+      ? Math.max(1, parseInt(req.body.priceQty, 10) || 1)
+      : (products[index].priceQty || 1);
+
     const updated = {
       ...products[index],
       ...req.body,
       brand: req.body.brand !== undefined ? req.body.brand.trim() : (products[index].brand || ''),
       stock: stockQty !== undefined && !isNaN(stockQty) ? stockQty : (products[index].stock ?? 50),
+      priceQty: parsedPriceQty,
       inStock: req.body.inStock !== undefined 
         ? req.body.inStock 
         : (stockQty !== undefined ? stockQty > 0 : products[index].inStock),
@@ -298,6 +305,7 @@ app.post('/api/bills', async (req, res) => {
         id: item.id,
         name: item.name,
         price: parseFloat(item.price),
+        priceQty: parseInt(item.priceQty, 10) || 1,
         qty: parseInt(item.qty, 10),
         total: parseFloat(item.price) * parseInt(item.qty, 10),
         emoji: item.emoji || '🎆',

@@ -840,12 +840,12 @@ body {
   }
 
   .barcode-print-sticker .sticker-price-line {
-    font-size: 11px !important;
+    font-size: 10.5px !important;
     font-weight: 900 !important;
     color: #000000 !important;
     margin-top: 1px !important;
     white-space: nowrap !important;
-    line-height: 1.2 !important;
+    line-height: 1.15 !important;
   }
 
   .barcode-print-sticker .mrp-val {
@@ -854,6 +854,19 @@ body {
     color: #555555 !important;
     text-decoration: line-through !important;
     margin-left: 3px !important;
+  }
+
+  .barcode-print-sticker .sticker-qty-note {
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+    margin-top: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.2px !important;
   }
 
   @page {

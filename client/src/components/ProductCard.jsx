@@ -51,8 +51,14 @@ export default function ProductCard({ product, inCartQty, onAddToCart, onUpdateQ
               </span>
             )}
             {product.unit && (
-              <span className="badge bg-secondary bg-opacity-10 text-muted rounded-pill px-1" style={{ fontSize: '0.65rem' }}>
-                {product.unit}
+              <span className={`badge rounded-pill px-2 ${
+                product.priceQty && product.priceQty > 1
+                  ? 'bg-warning bg-opacity-25 text-dark border border-warning fw-bold'
+                  : 'bg-secondary bg-opacity-10 text-muted'
+              }`} style={{ fontSize: '0.65rem' }}>
+                {product.priceQty && product.priceQty > 1
+                  ? `${product.priceQty} ${product.unit}s Pack`
+                  : `1 ${product.unit}`}
               </span>
             )}
           </div>
@@ -76,8 +82,20 @@ export default function ProductCard({ product, inCartQty, onAddToCart, onUpdateQ
               <span className="price-mrp">₹{product.mrp}</span>
             )}
           </div>
+          {/* How many boxes for this amount */}
+          <div className="mt-1">
+            <span className={`badge rounded-pill px-2 py-0 fw-bold ${
+              product.priceQty && product.priceQty > 1
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-light text-secondary border'
+            }`} style={{ fontSize: '0.68rem' }}>
+              {product.priceQty && product.priceQty > 1
+                ? `${product.priceQty} ${product.unit || 'Box'}s this amount`
+                : `1 ${product.unit || 'Box'} this amount`}
+            </span>
+          </div>
           {discountPercent > 0 && (
-            <span className="badge bg-danger bg-opacity-10 text-danger fw-bold" style={{ fontSize: '0.68rem' }}>
+            <span className="badge bg-danger bg-opacity-10 text-danger fw-bold mt-1 d-inline-block" style={{ fontSize: '0.65rem' }}>
               {discountPercent}% OFF
             </span>
           )}

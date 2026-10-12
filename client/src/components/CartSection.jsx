@@ -145,8 +145,18 @@ export default function CartSection({
                     {item.name}
                   </div>
                   <div className="text-muted small font-monospace">
-                    ₹{item.price} × {item.qty} = <span className="fw-bold text-success fs-6">₹{item.price * item.qty}</span>
+                    ₹{item.price}{' '}
+                    <span className="text-primary fw-semibold">
+                      ({(item.priceQty && item.priceQty > 1) ? `${item.priceQty} ${item.unit || 'Box'}s` : `1 ${item.unit || 'Box'}`})
+                    </span>
+                    {' '}× {item.qty} = <span className="fw-bold text-success fs-6">₹{item.price * item.qty}</span>
                   </div>
+                  {item.priceQty && item.priceQty > 1 && (
+                    <div className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 py-0 px-2 mt-1" style={{ fontSize: '0.7rem' }}>
+                      <i className="fa-solid fa-boxes-stacked me-1"></i>
+                      Total: {item.qty * item.priceQty} {item.unit || 'Box'}s ({item.priceQty} {item.unit || 'Box'}s this amount)
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -723,11 +723,40 @@ body {
     visibility: visible !important;
   }
 
+  /* Category Page wrapper with clean page-break */
+  .barcode-print-category-page {
+    width: 100% !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important;
+  }
+
+  .barcode-print-category-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
   .barcode-print-header {
     text-align: center !important;
-    margin-bottom: 3.5mm !important;
+    margin-bottom: 3mm !important;
     break-after: avoid !important;
     page-break-after: avoid !important;
+  }
+
+  .barcode-print-cat-badge {
+    display: inline-block !important;
+    background: #111827 !important;
+    color: #ffffff !important;
+    padding: 2px 10px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    margin: 2px auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .barcode-print-shop-name {

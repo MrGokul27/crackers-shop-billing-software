@@ -78,13 +78,31 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
     });
   }, [uniqueProducts, selectedCategory, searchTerm]);
 
-  // Group stickers into atomic rows of exactly 4 for clean page-break avoidance
-  const printRows = React.useMemo(() => {
-    const rows = [];
-    for (let i = 0; i < filtered.length; i += 4) {
-      rows.push(filtered.slice(i, i + 4));
+  // Group products category-wise for clean separate-page printing
+  const categoryGroups = React.useMemo(() => {
+    const groups = {};
+    for (const item of filtered) {
+      const cat = item.category || 'General';
+      if (!groups[cat]) {
+        groups[cat] = [];
+      }
+      groups[cat].push(item);
     }
-    return rows;
+
+    // Sort categories according to CATEGORY_ORDER
+    const sortedCatNames = Object.keys(groups).sort((a, b) => {
+      const idxA = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === a.toLowerCase());
+      const idxB = CATEGORY_ORDER.findIndex(c => c.toLowerCase() === b.toLowerCase());
+      const orderA = idxA === -1 ? 999 : idxA;
+      const orderB = idxB === -1 ? 999 : idxB;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.localeCompare(b);
+    });
+
+    return sortedCatNames.map(catName => ({
+      categoryName: catName,
+      items: groups[catName]
+    }));
   }, [filtered]);
 
   // Clean print state setup
@@ -173,7 +191,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                   onClick={handlePrintBarcodes}
                 >
                   <i className="fa-solid fa-print text-warning"></i>
-                  <span>Print Stickers Sheet ({filtered.length} Items • 4/Row)</span>
+                  <span>Print Stickers Sheet ({filtered.length} Items • Category Pages • 4/Row)</span>
                 </button>
               </div>
             </div>
@@ -325,7 +343,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
 
           <div className="modal-footer bg-light p-2 d-flex justify-content-between">
             <span className="text-muted small">
-              Showing <strong>{filtered.length}</strong> unique cracker items
+              Showing <strong>{filtered.length}</strong> unique cracker items ({categoryGroups.length} categories)
             </span>
             <div className="d-flex gap-2">
               <button
@@ -333,7 +351,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                 className="btn btn-outline-primary btn-sm fw-bold px-3"
                 onClick={handlePrintBarcodes}
               >
-                <i className="fa-solid fa-print me-1"></i> Print Stickers Sheet ({filtered.length} Items • 4/Row)
+                <i className="fa-solid fa-print me-1"></i> Print Stickers Sheet ({filtered.length} Items • Category Pages • 4/Row)
               </button>
               <button type="button" className="btn btn-secondary btn-sm px-4" onClick={onClose}>
                 Close
@@ -347,51 +365,61 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
       {/* Render print sheet directly to document.body for clean pagination outside React root flow */}
       {createPortal(
         <div className="printable-barcode-sheet">
-          <div className="barcode-print-header">
-            <h2 className="barcode-print-shop-name">{settings?.shopName || 'SRI KRISHNA CRACKERS'}</h2>
-            <p className="barcode-print-sub">
-              Master Product Barcode Stickers • {filtered.length} Items ({printRows.length} Rows of 4)
-            </p>
-            <hr className="barcode-print-hr" />
-          </div>
+          {categoryGroups.map((group, gIdx) => (
+            <div 
+              className="barcode-print-category-page" 
+              key={`cat-page-${group.categoryName}-${gIdx}`}
+            >
+              <div className="barcode-print-header">
+                <h2 className="barcode-print-shop-name">{settings?.shopName || 'SRI KRISHNA CRACKERS'}</h2>
+                <div className="barcode-print-cat-badge">
+                  {group.categoryName}
+                </div>
+                <p className="barcode-print-sub">
+                  Category: <strong>{group.categoryName}</strong> • {group.items.length} {group.items.length === 1 ? 'Item' : 'Items'} (4 Stickers per Item Row)
+                </p>
+                <hr className="barcode-print-hr" />
+              </div>
 
-          <div className="barcode-print-sheet-content">
-            {printRows.map((row, rIdx) => (
-              <div className="barcode-print-row" key={`prow-${rIdx}`}>
-                {row.map(p => (
-                  <div className="barcode-print-sticker" key={p.id || p.barcode}>
-                    <div className="sticker-shop-name">
-                      {settings?.shopName || 'CRACKER STORE'}
-                    </div>
-                    <div className="sticker-product-name" title={p.name}>
-                      {p.name}
-                    </div>
-                    <div className="sticker-barcode-wrapper">
-                      <BarcodeGenerator
-                        value={p.barcode || '8901001'}
-                        width={1.25}
-                        height={32}
-                        fontSize={11}
-                        margin={4}
-                        displayValue={true}
-                      />
-                    </div>
-                    <div className="sticker-price-line">
-                      <span className="fw-bold">PRICE: ₹{p.price}</span>
-                      {p.mrp && Number(p.mrp) > Number(p.price) && (
-                        <span className="mrp-val">(MRP ₹{p.mrp})</span>
-                      )}
-                    </div>
-                    <div className="sticker-qty-note">
-                      {(p.priceQty && p.priceQty > 1) 
-                        ? `${p.priceQty} ${p.unit || 'Box'}s this amount` 
-                        : `1 ${p.unit || 'Box'} this amount`}
-                    </div>
+              <div className="barcode-print-sheet-content">
+                {group.items.map((p, pIdx) => (
+                  <div className="barcode-print-row" key={`prow-${p.id || p.barcode}-${pIdx}`}>
+                    {[1, 2, 3, 4].map(copyNum => (
+                      <div className="barcode-print-sticker" key={`stk-${p.id || p.barcode}-copy-${copyNum}`}>
+                        <div className="sticker-shop-name">
+                          {settings?.shopName || 'CRACKER STORE'}
+                        </div>
+                        <div className="sticker-product-name" title={p.name}>
+                          {p.name}
+                        </div>
+                        <div className="sticker-barcode-wrapper">
+                          <BarcodeGenerator
+                            value={p.barcode || '8901001'}
+                            width={1.25}
+                            height={32}
+                            fontSize={11}
+                            margin={4}
+                            displayValue={true}
+                          />
+                        </div>
+                        <div className="sticker-price-line">
+                          <span className="fw-bold">PRICE: ₹{p.price}</span>
+                          {p.mrp && Number(p.mrp) > Number(p.price) && (
+                            <span className="mrp-val">(MRP ₹{p.mrp})</span>
+                          )}
+                        </div>
+                        <div className="sticker-qty-note">
+                          {(p.priceQty && p.priceQty > 1) 
+                            ? `${p.priceQty} ${p.unit || 'Box'}s this amount` 
+                            : `1 ${p.unit || 'Box'} this amount`}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>,
         document.body
       )}

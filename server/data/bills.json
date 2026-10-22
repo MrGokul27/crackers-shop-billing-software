@@ -1,1 +1,231 @@
-[]
+[
+  {
+    "id": "bill_1792360216161",
+    "billNo": "CRK-1003",
+    "items": [
+      {
+        "id": "p_1791629488700",
+        "name": "2\" Wetwo Crackers",
+        "price": 13.44,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 13.44,
+        "emoji": "💥",
+        "unit": "PKT"
+      },
+      {
+        "id": "p_1791629256351",
+        "name": "3½\" Lakshmi /pyro king Crackers",
+        "price": 28.4,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 28.4,
+        "emoji": "💥",
+        "unit": "PKT"
+      },
+      {
+        "id": "p_1791629745985",
+        "name": "Ground Chakkar Ashoka (21\")",
+        "price": 137,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 137,
+        "emoji": "🌀",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791716320295",
+        "name": "Colour Kothi",
+        "price": 420,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 420,
+        "emoji": "🪴",
+        "unit": "Box"
+      }
+    ],
+    "totalItemsCount": 4,
+    "subtotal": 598.84,
+    "discount": 0,
+    "grandTotal": 599,
+    "paymentMethod": "CASH",
+    "amountReceived": 0,
+    "changeToReturn": 0,
+    "customerPhone": "",
+    "cashier": "Owner/Admin",
+    "createdAt": "2026-10-18T21:50:16.162Z",
+    "shopSnapshot": {
+      "shopName": "CRACKERS SHOP",
+      "phone": "+91 93451 81039",
+      "address": "No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai",
+      "footerNote": "✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.",
+      "upiId": "gokulanathjp@okicici"
+    }
+  },
+  {
+    "id": "bill_1791874086136",
+    "billNo": "CRK-1002",
+    "items": [
+      {
+        "id": "p_1791629256351",
+        "name": "3½\" Lakshmi /pyro king Crackers",
+        "price": 28.4,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 28.4,
+        "emoji": "💥",
+        "unit": "PKT"
+      },
+      {
+        "id": "p_1791630785041",
+        "name": "10 Cm. Colour Sparklers",
+        "price": 40,
+        "priceQty": 1,
+        "qty": 4,
+        "total": 160,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791631045552",
+        "name": "10 Cm Red Flash Sparklers",
+        "price": 48.4,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 48.4,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791631072352",
+        "name": "15 Cm Green Flash Sparklers",
+        "price": 179,
+        "priceQty": 2,
+        "qty": 1,
+        "total": 179,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791631126265",
+        "name": "30 Cm Green Flash Sparklers",
+        "price": 179,
+        "priceQty": 2,
+        "qty": 3,
+        "total": 537,
+        "emoji": "✨",
+        "unit": "Box"
+      }
+    ],
+    "totalItemsCount": 10,
+    "subtotal": 952.8,
+    "discount": 0,
+    "grandTotal": 953,
+    "paymentMethod": "CASH",
+    "amountReceived": 0,
+    "changeToReturn": 0,
+    "customerPhone": "",
+    "cashier": "Owner/Admin",
+    "createdAt": "2026-10-13T06:48:06.136Z",
+    "shopSnapshot": {
+      "shopName": "CRACKERS SHOP",
+      "phone": "+91 93451 81039",
+      "address": "No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai",
+      "footerNote": "✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.",
+      "upiId": "gokulanathjp@okicici"
+    }
+  },
+  {
+    "id": "bill_1791873881757",
+    "billNo": "CRK-1001",
+    "items": [
+      {
+        "id": "p_1791629441438",
+        "name": "2½\" Wetwo Crackers",
+        "price": 18.08,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 18.08,
+        "emoji": "💥",
+        "unit": "PKT"
+      },
+      {
+        "id": "p_1791627304274",
+        "name": "4\" Lakshmi /pyro king Crackers",
+        "price": 38.9,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 38.9,
+        "emoji": "💥",
+        "unit": "PKT"
+      },
+      {
+        "id": "p_1791629532687",
+        "name": "Lakshmi Deluxe",
+        "price": 56.8,
+        "priceQty": 1,
+        "qty": 2,
+        "total": 113.6,
+        "emoji": "💥",
+        "unit": "PKT"
+      },
+      {
+        "id": "p_1791631190138",
+        "name": "10 Cm Rainbow Sparklers (4 box)",
+        "price": 210,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 210,
+        "emoji": "✨",
+        "unit": "Pack"
+      },
+      {
+        "id": "p_1791631045552",
+        "name": "10 Cm Red Flash Sparklers",
+        "price": 48.4,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 48.4,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791630455105",
+        "name": "10 Cm. Electric Sparklers",
+        "price": 33.6,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 33.6,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791631019838",
+        "name": "10 Cm. Green Flash Sparklers",
+        "price": 46.2,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 46.2,
+        "emoji": "✨",
+        "unit": "Box"
+      }
+    ],
+    "totalItemsCount": 8,
+    "subtotal": 508.78,
+    "discount": 0,
+    "grandTotal": 509,
+    "paymentMethod": "CASH",
+    "amountReceived": 0,
+    "changeToReturn": 0,
+    "customerPhone": "",
+    "cashier": "Owner/Admin",
+    "createdAt": "2026-10-13T06:44:41.757Z",
+    "shopSnapshot": {
+      "shopName": "CRACKERS SHOP",
+      "phone": "+91 93451 81039",
+      "address": "No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai",
+      "footerNote": "✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.",
+      "upiId": "gokulanathjp@okicici"
+    }
+  }
+]

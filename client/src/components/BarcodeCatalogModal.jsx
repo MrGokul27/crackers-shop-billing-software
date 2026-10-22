@@ -371,7 +371,6 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
               key={`cat-page-${group.categoryName}-${gIdx}`}
             >
               <div className="barcode-print-header">
-                <h2 className="barcode-print-shop-name">{settings?.shopName || 'SRI KRISHNA CRACKERS'}</h2>
                 <div className="barcode-print-cat-badge">
                   {group.categoryName}
                 </div>
@@ -386,19 +385,16 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                   <div className="barcode-print-row" key={`prow-${p.id || p.barcode}-${pIdx}`}>
                     {[1, 2, 3, 4].map(copyNum => (
                       <div className="barcode-print-sticker" key={`stk-${p.id || p.barcode}-copy-${copyNum}`}>
-                        <div className="sticker-shop-name">
-                          {settings?.shopName || 'CRACKER STORE'}
-                        </div>
                         <div className="sticker-product-name" title={p.name}>
                           {p.name}
                         </div>
                         <div className="sticker-barcode-wrapper">
                           <BarcodeGenerator
                             value={p.barcode || '8901001'}
-                            width={1.25}
-                            height={32}
-                            fontSize={11}
-                            margin={4}
+                            width={1.2}
+                            height={22}
+                            fontSize={10}
+                            margin={2}
                             displayValue={true}
                           />
                         </div>

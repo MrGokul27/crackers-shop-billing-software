@@ -1,5 +1,78 @@
 [
   {
+    "id": "bill_1792689727922",
+    "billNo": "CRK-1004",
+    "items": [
+      {
+        "id": "p_1792689705496",
+        "name": "Standard Gold Sparklers 9 Cm",
+        "price": 333,
+        "priceQty": 10,
+        "qty": 2,
+        "total": 666,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791630419933",
+        "name": "7 Cm. Electric Sparklers",
+        "price": 20,
+        "priceQty": 1,
+        "qty": 2,
+        "total": 40,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1791630636520",
+        "name": "75 Cm. Electric Sparklers (2 pcs)",
+        "price": 200,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 200,
+        "emoji": "✨",
+        "unit": "Tube"
+      },
+      {
+        "id": "p_1791630686361",
+        "name": "7 Cm. Colour Sparklers",
+        "price": 24.2,
+        "priceQty": 1,
+        "qty": 1,
+        "total": 24.2,
+        "emoji": "✨",
+        "unit": "Box"
+      },
+      {
+        "id": "p_1792689649358",
+        "name": "Bobby Gold Sparklers 7 Cm",
+        "price": 295,
+        "priceQty": 10,
+        "qty": 1,
+        "total": 295,
+        "emoji": "✨",
+        "unit": "Box"
+      }
+    ],
+    "totalItemsCount": 7,
+    "subtotal": 1225.2,
+    "discount": 0,
+    "grandTotal": 1225,
+    "paymentMethod": "CASH",
+    "amountReceived": 0,
+    "changeToReturn": 0,
+    "customerPhone": "",
+    "cashier": "Owner/Admin",
+    "createdAt": "2026-10-22T17:22:07.922Z",
+    "shopSnapshot": {
+      "shopName": "CRACKERS SHOP",
+      "phone": "+91 93451 81039",
+      "address": "No. 12, Gandhi Bazaar Main Road, Sivakasi / Chennai",
+      "footerNote": "✨ HAPPY DIWALI & SAFE CELEBRATIONS! ✨\nItems once sold cannot be exchanged or returned.",
+      "upiId": "gokulanathjp@okicici"
+    }
+  },
+  {
     "id": "bill_1792360216161",
     "billNo": "CRK-1003",
     "items": [

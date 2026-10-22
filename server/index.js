@@ -107,6 +107,7 @@ app.get('/api/products', async (req, res) => {
       const q = search.toLowerCase().trim();
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(q) || 
+        (p.code && String(p.code).toLowerCase().includes(q)) ||
         (p.barcode && p.barcode.toLowerCase().includes(q)) ||
         (p.brand && p.brand.toLowerCase().includes(q)) ||
         p.category.toLowerCase().includes(q)
@@ -137,19 +138,36 @@ app.get('/api/products/barcode/:barcode', async (req, res) => {
 // POST add new product
 app.post('/api/products', async (req, res) => {
   try {
-    const { name, category, price, mrp, barcode, emoji, unit, inStock, brand, stock, priceQty } = req.body;
+    const { name, code, category, price, mrp, barcode, emoji, unit, inStock, brand, stock, priceQty } = req.body;
     if (!name || !price) {
       return res.status(400).json({ success: false, message: 'Name and price are required' });
     }
 
     const products = await db.getProducts();
+    const normalizedBrand = brand ? brand.trim() : 'Standard Fireworks';
+    const normalizedCode = code !== undefined && code !== null ? String(code).trim() : '';
+
+    if (normalizedCode) {
+      const duplicate = products.find(p =>
+        (p.brand || 'Standard Fireworks').trim().toLowerCase() === normalizedBrand.toLowerCase() &&
+        p.code && String(p.code).trim().toLowerCase() === normalizedCode.toLowerCase()
+      );
+      if (duplicate) {
+        return res.status(400).json({
+          success: false,
+          message: `Code "${normalizedCode}" is already used in brand "${normalizedBrand}" (${duplicate.name}). Code must be unique per brand.`
+        });
+      }
+    }
+
     const stockQty = stock !== undefined && stock !== '' ? parseInt(stock, 10) : 50;
     const parsedPriceQty = priceQty !== undefined && priceQty !== '' ? Math.max(1, parseInt(priceQty, 10) || 1) : 1;
     const newProduct = {
       id: 'p_' + Date.now(),
       name: name.trim(),
+      code: normalizedCode,
       category: category || 'General',
-      brand: brand ? brand.trim() : 'Standard Fireworks',
+      brand: normalizedBrand,
       stock: isNaN(stockQty) ? 50 : stockQty,
       price: parseFloat(price) || 0,
       priceQty: parsedPriceQty,
@@ -187,6 +205,28 @@ app.put('/api/products/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
+    const normalizedBrand = req.body.brand !== undefined
+      ? (req.body.brand.trim() || 'Standard Fireworks')
+      : (products[index].brand || 'Standard Fireworks');
+
+    const normalizedCode = req.body.code !== undefined
+      ? String(req.body.code || '').trim()
+      : (products[index].code ? String(products[index].code).trim() : '');
+
+    if (normalizedCode) {
+      const duplicate = products.find(p =>
+        p.id !== id &&
+        (p.brand || 'Standard Fireworks').trim().toLowerCase() === normalizedBrand.toLowerCase() &&
+        p.code && String(p.code).trim().toLowerCase() === normalizedCode.toLowerCase()
+      );
+      if (duplicate) {
+        return res.status(400).json({
+          success: false,
+          message: `Code "${normalizedCode}" is already used in brand "${normalizedBrand}" (${duplicate.name}). Code must be unique per brand.`
+        });
+      }
+    }
+
     const stockQty = req.body.stock !== undefined && req.body.stock !== '' 
       ? parseInt(req.body.stock, 10) 
       : products[index].stock;
@@ -198,7 +238,8 @@ app.put('/api/products/:id', async (req, res) => {
     const updated = {
       ...products[index],
       ...req.body,
-      brand: req.body.brand !== undefined ? req.body.brand.trim() : (products[index].brand || ''),
+      code: normalizedCode,
+      brand: normalizedBrand,
       stock: stockQty !== undefined && !isNaN(stockQty) ? stockQty : (products[index].stock ?? 50),
       priceQty: parsedPriceQty,
       inStock: req.body.inStock !== undefined 

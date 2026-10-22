@@ -39,6 +39,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
 
   const [formData, setFormData] = useState({
     name: '',
+    code: '',
     category: 'SINGLE SHOT CRACKERS',
     brand: 'Standard Fireworks',
     stock: 50,
@@ -56,6 +57,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     setEditingProduct(null);
     setFormData({
       name: '',
+      code: '',
       category: 'SINGLE SHOT CRACKERS',
       brand: 'Standard Fireworks',
       stock: 50,
@@ -74,6 +76,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     setIsCreating(false);
     setFormData({
       name: p.name,
+      code: p.code || '',
       category: p.category,
       brand: p.brand || 'Standard Fireworks',
       stock: p.stock !== undefined ? p.stock : 50,
@@ -86,6 +89,17 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       inStock: p.inStock !== undefined ? p.inStock : true
     });
   };
+
+  // Check if the entered CODE is already used for the same Brand
+  const trimmedCode = String(formData.code || '').trim();
+  const currentBrand = String(formData.brand || 'Standard Fireworks').trim() || 'Standard Fireworks';
+  const duplicateCodeProduct = trimmedCode
+    ? products.find(p =>
+        (!editingProduct || p.id !== editingProduct.id) &&
+        String(p.brand || 'Standard Fireworks').trim().toLowerCase() === currentBrand.toLowerCase() &&
+        p.code && String(p.code).trim().toLowerCase() === trimmedCode.toLowerCase()
+      )
+    : null;
 
   const handleGenerateRandomBarcode = () => {
     setFormData(prev => ({
@@ -101,8 +115,15 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       return;
     }
 
+    if (duplicateCodeProduct) {
+      alert(`Code "${trimmedCode}" is already used in Brand "${currentBrand}" for "${duplicateCodeProduct.name}".\n\nDifferent brands can have the same code, but within the same brand the code must be unique.`);
+      return;
+    }
+
     const payload = {
       ...formData,
+      code: trimmedCode,
+      brand: currentBrand,
       priceQty: Math.max(1, parseInt(formData.priceQty, 10) || 1)
     };
 
@@ -116,6 +137,9 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
         if (res.ok) {
           setIsCreating(false);
           onRefreshProducts();
+        } else {
+          const errJson = await res.json().catch(() => ({}));
+          alert(errJson.message || 'Failed to save product');
         }
       } else if (editingProduct) {
         const res = await fetch(`/api/products/${editingProduct.id}`, {
@@ -126,6 +150,9 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
         if (res.ok) {
           setEditingProduct(null);
           onRefreshProducts();
+        } else {
+          const errJson = await res.json().catch(() => ({}));
+          alert(errJson.message || 'Failed to update product');
         }
       }
     } catch (err) {
@@ -200,6 +227,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
     const q = searchTerm.toLowerCase();
     return (
       p.name.toLowerCase().includes(q) || 
+      (p.code && String(p.code).toLowerCase().includes(q)) ||
       p.category.toLowerCase().includes(q) || 
       (p.brand && p.brand.toLowerCase().includes(q)) || 
       (p.barcode && p.barcode.includes(q))
@@ -246,7 +274,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
 
                 <div className="row g-2">
                   {/* Name */}
-                  <div className="col-md-5">
+                  <div className="col-md-4">
                     <label className="form-label small fw-bold mb-1">Cracker Name *</label>
                     <input
                       type="text"
@@ -256,6 +284,29 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
                     />
+                  </div>
+
+                  {/* Code (Optional, Unique per Brand) */}
+                  <div className="col-md-2">
+                    <label className="form-label small fw-bold mb-1">
+                      <i className="fa-solid fa-hashtag text-warning me-1"></i> Code <span className="text-muted fw-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`form-control form-control-sm font-monospace fw-bold ${duplicateCodeProduct ? 'is-invalid' : ''}`}
+                      placeholder="e.g. 101 or A1"
+                      value={formData.code || ''}
+                      onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                    />
+                    {duplicateCodeProduct ? (
+                      <div className="invalid-feedback" style={{ fontSize: '0.68rem' }}>
+                        Used in <strong>{currentBrand}</strong> ({duplicateCodeProduct.name})
+                      </div>
+                    ) : (
+                      <div className="form-text mt-0 text-muted" style={{ fontSize: '0.65rem' }}>
+                        Unique per brand
+                      </div>
+                    )}
                   </div>
 
                   {/* Category */}
@@ -273,7 +324,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                   </div>
 
                   {/* Brand */}
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                     <label className="form-label small fw-bold mb-1">
                       <i className="fa-solid fa-tag text-primary me-1"></i> Brand
                     </label>
@@ -460,7 +511,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Filter cracker, brand..."
+                    placeholder="Filter cracker, code, brand..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -520,6 +571,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
               <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.86rem' }}>
                 <thead className="table-light sticky-top">
                   <tr>
+                    <th>Code</th>
                     <th>Item</th>
                     <th>Category</th>
                     <th>Brand</th>
@@ -532,7 +584,7 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                 <tbody>
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="text-center py-4 text-muted">
+                      <td colSpan="8" className="text-center py-4 text-muted">
                         <i className="fa-solid fa-box-open fs-2 d-block mb-2 text-secondary opacity-50"></i>
                         No cracker items found. Click <strong>"Add New Cracker"</strong> above to create your first item!
                       </td>
@@ -540,6 +592,15 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                   ) : (
                     filtered.map(p => (
                     <tr key={p.id}>
+                      <td>
+                        {p.code ? (
+                          <span className="badge bg-dark text-warning font-monospace fw-bold px-2 py-1" style={{ fontSize: '0.78rem' }}>
+                            {p.code}
+                          </span>
+                        ) : (
+                          <span className="text-muted small">-</span>
+                        )}
+                      </td>
                       <td>
                         <span className="me-2 fs-6">{p.emoji || '🎆'}</span>
                         <strong className="text-dark">{p.name}</strong>

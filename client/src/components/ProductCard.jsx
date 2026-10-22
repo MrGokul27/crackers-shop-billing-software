@@ -30,6 +30,11 @@ export default function ProductCard({ product, inCartQty, onAddToCart, onUpdateQ
         </div>
         <div className="flex-grow-1" style={{ minWidth: 0 }}>
           <div className="d-flex align-items-center gap-1 flex-wrap">
+            {product.code && (
+              <span className="badge bg-dark text-warning font-monospace fw-bold rounded-pill px-2" style={{ fontSize: '0.68rem' }} title={`Code: ${product.code}`}>
+                Code: {product.code}
+              </span>
+            )}
             <span className="badge bg-light text-secondary border rounded-pill px-2" style={{ fontSize: '0.68rem' }}>
               {product.category}
             </span>

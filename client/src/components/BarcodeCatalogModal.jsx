@@ -65,6 +65,7 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
       const q = searchTerm.toLowerCase();
       return (
         (p.name && p.name.toLowerCase().includes(q)) || 
+        (p.code && String(p.code).toLowerCase().includes(q)) ||
         (p.barcode && String(p.barcode).includes(q)) ||
         (p.brand && p.brand.toLowerCase().includes(q))
       );
@@ -240,6 +241,11 @@ export default function BarcodeCatalogModal({ products, settings, onSimulateScan
                     {/* Item Title */}
                     <div className="d-flex align-items-center justify-content-between border-bottom pb-1 mb-1">
                       <div className="d-flex align-items-center gap-1 flex-wrap">
+                        {p.code && (
+                          <span className="badge bg-dark text-warning font-monospace fw-bold small" style={{ fontSize: '0.65rem' }}>
+                            Code: {p.code}
+                          </span>
+                        )}
                         <span className="badge bg-light text-dark border small" style={{ fontSize: '0.68rem' }}>
                           {p.category}
                         </span>

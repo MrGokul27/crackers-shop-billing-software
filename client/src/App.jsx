@@ -489,6 +489,7 @@ export default function App() {
     const q = searchQuery.toLowerCase().trim();
     return (
       p.name.toLowerCase().includes(q) ||
+      (p.code && String(p.code).toLowerCase().includes(q)) ||
       (p.barcode && p.barcode.toLowerCase().includes(q)) ||
       (p.brand && p.brand.toLowerCase().includes(q)) ||
       p.category.toLowerCase().includes(q)
@@ -613,7 +614,7 @@ export default function App() {
                   ref={searchInputRef}
                   type="text"
                   className="form-control pos-search-input"
-                  placeholder="⚡ Point Barcode Scanner gun & scan box, or type cracker name..."
+                  placeholder="⚡ Point Barcode Scanner gun & scan box, or type cracker name / code..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}

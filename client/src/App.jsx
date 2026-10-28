@@ -36,6 +36,7 @@ const CATEGORY_ORDER = [
   '3 EFFECT SERIES',
   'COLOUR SMOKE',
   'GIFT BOXES',
+  'ROCKETS',
   'OTHERS'
 ];
 
@@ -55,6 +56,7 @@ const CATEGORY_EMOJIS = {
   '3 EFFECT SERIES': '🌠',
   'COLOUR SMOKE': '💨',
   'GIFT BOXES': '🎁',
+  'ROCKETS': '🚀',
   'OTHERS': '🏷️'
 };
 
@@ -517,16 +519,25 @@ export default function App() {
   }, []);
 
   // Catch any items whose category is custom / not in CATEGORY_ORDER
-  const otherItems = filteredProducts.filter(
-    p => !CATEGORY_ORDER.some(c => c.toLowerCase() === (p.category || '').toLowerCase())
-  );
-  if (otherItems.length > 0) {
-    groupedProducts.push({
-      category: 'OTHERS',
-      emoji: '🏷️',
-      items: otherItems
-    });
-  }
+  const customCategories = [
+    ...new Set(
+      filteredProducts
+        .filter(p => !CATEGORY_ORDER.some(c => c.toLowerCase() === (p.category || '').toLowerCase()))
+        .map(p => p.category || 'OTHERS')
+    )
+  ];
+  customCategories.forEach(customCat => {
+    const items = filteredProducts.filter(
+      p => (p.category || 'OTHERS').toLowerCase() === customCat.toLowerCase()
+    );
+    if (items.length > 0) {
+      groupedProducts.push({
+        category: customCat.toUpperCase(),
+        emoji: '🏷️',
+        items
+      });
+    }
+  });
 
   // Create active draft bill fallback for instant preview or Ctrl+P while adding products
   const currentDraftBill = cart.length > 0 ? {

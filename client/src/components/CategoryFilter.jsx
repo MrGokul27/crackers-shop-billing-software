@@ -17,15 +17,39 @@ const CATEGORIES = [
   { id: '3 EFFECT SERIES', label: '3 Effect Series', emoji: '🌠' },
   { id: 'COLOUR SMOKE', label: 'Colour Smoke', emoji: '💨' },
   { id: 'GIFT BOXES', label: 'Gift Boxes', emoji: '🎁' },
+  { id: 'ROCKETS', label: 'Rockets', emoji: '🚀' },
   { id: 'OTHERS', label: 'Others', emoji: '🏷️' }
 ];
 
 export default function CategoryFilter({ activeCategory, onSelectCategory, counts }) {
+  // Include any custom categories created via "Others" before the "Others" pill
+  const customCategories = Object.keys(counts || {})
+    .filter(catName =>
+      catName &&
+      !CATEGORIES.some(c => c.id.toLowerCase() === catName.toLowerCase())
+    )
+    .map(catName => ({
+      id: catName,
+      label: catName
+        .toLowerCase()
+        .replace(/\b\w/g, char => char.toUpperCase()),
+      emoji: '🏷️'
+    }));
+
+  const allCategories = [
+    ...CATEGORIES.slice(0, -1),
+    ...customCategories,
+    CATEGORIES[CATEGORIES.length - 1]
+  ];
+
   return (
     <div className="category-strip shadow-sm">
-      {CATEGORIES.map(cat => {
+      {allCategories.map(cat => {
         const isActive = activeCategory.toLowerCase() === cat.id.toLowerCase();
-        const count = counts?.[cat.id] || 0;
+        const matchingKey = Object.keys(counts || {}).find(
+          k => k.toLowerCase() === cat.id.toLowerCase()
+        );
+        const count = matchingKey ? counts[matchingKey] : 0;
         return (
           <button
             key={cat.id}

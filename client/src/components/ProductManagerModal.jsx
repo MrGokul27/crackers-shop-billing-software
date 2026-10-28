@@ -17,6 +17,7 @@ const CATEGORIES = [
   '3 EFFECT SERIES',
   'COLOUR SMOKE',
   'GIFT BOXES',
+  'ROCKETS',
   'OTHERS'
 ];
 
@@ -36,6 +37,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
   const [editingProduct, setEditingProduct] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategory, setCustomCategory] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -55,6 +58,8 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
   const handleStartCreate = () => {
     setIsCreating(true);
     setEditingProduct(null);
+    setIsCustomCategory(false);
+    setCustomCategory('');
     setFormData({
       name: '',
       code: '',
@@ -74,10 +79,19 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
   const handleStartEdit = (p) => {
     setEditingProduct(p);
     setIsCreating(false);
+    const cat = p.category || 'SINGLE SHOT CRACKERS';
+    const isPreset = CATEGORIES.some(c => c !== 'OTHERS' && c.toLowerCase() === cat.toLowerCase());
+    if (!isPreset) {
+      setIsCustomCategory(true);
+      setCustomCategory(cat.toUpperCase() === 'OTHERS' ? '' : cat);
+    } else {
+      setIsCustomCategory(false);
+      setCustomCategory('');
+    }
     setFormData({
       name: p.name,
       code: p.code || '',
-      category: p.category,
+      category: isPreset ? CATEGORIES.find(c => c.toLowerCase() === cat.toLowerCase()) : cat,
       brand: p.brand || 'Standard Fireworks',
       stock: p.stock !== undefined ? p.stock : 50,
       price: p.price,
@@ -120,8 +134,13 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
       return;
     }
 
+    const finalCategory = isCustomCategory
+      ? (customCategory.trim() ? customCategory.trim().toUpperCase() : 'OTHERS')
+      : formData.category;
+
     const payload = {
       ...formData,
+      category: finalCategory,
       code: trimmedCode,
       brand: currentBrand,
       priceQty: Math.max(1, parseInt(formData.priceQty, 10) || 1)
@@ -314,13 +333,37 @@ export default function ProductManagerModal({ products, onRefreshProducts, onClo
                     <label className="form-label small fw-bold mb-1">Category</label>
                     <select
                       className="form-select form-select-sm"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      value={isCustomCategory ? 'OTHERS' : formData.category}
+                      onChange={(e) => {
+                        const selected = e.target.value;
+                        if (selected === 'OTHERS') {
+                          setIsCustomCategory(true);
+                          setFormData({ ...formData, category: customCategory.trim() || 'OTHERS' });
+                        } else {
+                          setIsCustomCategory(false);
+                          setCustomCategory('');
+                          setFormData({ ...formData, category: selected });
+                        }
+                      }}
                     >
                       {CATEGORIES.map(c => (
                         <option key={c} value={c}>{c}</option>
                       ))}
                     </select>
+                    {isCustomCategory && (
+                      <input
+                        type="text"
+                        className="form-control form-control-sm mt-1"
+                        placeholder="Type category name..."
+                        value={customCategory}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomCategory(val);
+                          setFormData({ ...formData, category: val.trim() || 'OTHERS' });
+                        }}
+                        autoFocus
+                      />
+                    )}
                   </div>
 
                   {/* Brand */}

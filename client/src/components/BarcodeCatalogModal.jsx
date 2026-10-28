@@ -18,6 +18,7 @@ const CATEGORY_ORDER = [
   '3 EFFECT SERIES',
   'COLOUR SMOKE',
   'GIFT BOXES',
+  'ROCKETS',
   'OTHERS'
 ];
 
